@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <cassert>
 #include <exception>
+#include <utility>
+
 #undef max
 #undef min
 
@@ -13,6 +15,26 @@
 
 namespace yuki {
 using Microsoft::WRL::ComPtr;
+template <typename R, typename S>
+static constexpr R ConvertTo(S) {
+  static_assert(false, "Required to implement.");
+  return {};
+}
+/*******************************************************************************
+ * class ComException
+ ******************************************************************************/
+struct ComException : std::exception {
+  HRESULT const hr;
+  explicit ComException(HRESULT const value) : hr(value) {}
+};
+
+inline void ThrowIfFailed(HRESULT const hr) {
+  if (S_OK != hr) throw ComException(hr);
+}
+
+inline void WarnIfFailed(HRESULT const hr) {
+  if (S_OK != hr) throw ComException(hr);
+}
 /*******************************************************************************
  * Direct2D Device Dependent Resource
  ******************************************************************************/
@@ -34,9 +56,7 @@ class D2DBrush : public D2DDeviceDependentRes {
  ******************************************************************************/
 class D2DSolidColorBrush : public SolidColorBrush, public D2DBrush {
  public:
-  explicit D2DSolidColorBrush(const ComPtr<ID2D1SolidColorBrush>& brush)
-      : brush_(brush) {}
-  explicit D2DSolidColorBrush(ComPtr<ID2D1SolidColorBrush>&& brush)
+  explicit D2DSolidColorBrush(ComPtr<ID2D1SolidColorBrush> brush)
       : brush_(std::move(brush)) {}
   virtual ~D2DSolidColorBrush() = default;
   ComPtr<ID2D1Brush> getD2DBrush() const override { return brush_; }
@@ -46,14 +66,196 @@ class D2DSolidColorBrush : public SolidColorBrush, public D2DBrush {
 };
 class D2DBitmap : public Bitmap, public D2DDeviceDependentRes {
  public:
-  explicit D2DBitmap(const ComPtr<ID2D1Bitmap>& bitmap) : bitmap_(bitmap) {}
-  explicit D2DBitmap(ComPtr<ID2D1Bitmap>&& bitmap)
-      : bitmap_(std::move(bitmap)) {}
+  explicit D2DBitmap(ComPtr<ID2D1Bitmap> bitmap) : bitmap_(std::move(bitmap)) {}
   virtual ComPtr<ID2D1Bitmap> getD2DBitmap() const { return bitmap_; }
   virtual ~D2DBitmap() = default;
 
  private:
   ComPtr<ID2D1Bitmap> bitmap_;
+};
+/*******************************************************************************
+ * DirectWrite TextFormat Wrapper
+ ******************************************************************************/
+template <>
+constexpr DWRITE_TEXT_ALIGNMENT ConvertTo(TextAlignment textAlignment) {
+  DWRITE_TEXT_ALIGNMENT result = DWRITE_TEXT_ALIGNMENT_LEADING;
+  switch (textAlignment) {
+    case TextAlignment::Leading:
+      result = DWRITE_TEXT_ALIGNMENT_LEADING;
+      break;
+    case TextAlignment::Trailing:
+      result = DWRITE_TEXT_ALIGNMENT_TRAILING;
+      break;
+    case TextAlignment::Center:
+      result = DWRITE_TEXT_ALIGNMENT_CENTER;
+      break;
+    case TextAlignment::Justified:
+      result = DWRITE_TEXT_ALIGNMENT_JUSTIFIED;
+      break;
+  }
+  return result;
+}
+
+template <>
+constexpr TextAlignment ConvertTo(DWRITE_TEXT_ALIGNMENT textAlignment) {
+  TextAlignment result = TextAlignment::Leading;
+  switch (textAlignment) {
+    case DWRITE_TEXT_ALIGNMENT_LEADING:
+      result = TextAlignment::Leading;
+      break;
+    case DWRITE_TEXT_ALIGNMENT_TRAILING:
+      result = TextAlignment::Trailing;
+      break;
+    case DWRITE_TEXT_ALIGNMENT_CENTER:
+      result = TextAlignment::Center;
+      break;
+    case DWRITE_TEXT_ALIGNMENT_JUSTIFIED:
+      result = TextAlignment::Justified;
+      break;
+  }
+  return result;
+}
+
+template <>
+constexpr DWRITE_PARAGRAPH_ALIGNMENT ConvertTo(
+    ParagraphAlignment paragraphAlignment) {
+  DWRITE_PARAGRAPH_ALIGNMENT result = DWRITE_PARAGRAPH_ALIGNMENT_NEAR;
+  switch (paragraphAlignment) {
+    case ParagraphAlignment::Near:
+      result = DWRITE_PARAGRAPH_ALIGNMENT_NEAR;
+      break;
+    case ParagraphAlignment::Far:
+      result = DWRITE_PARAGRAPH_ALIGNMENT_FAR;
+      break;
+    case ParagraphAlignment::Center:
+      result = DWRITE_PARAGRAPH_ALIGNMENT_CENTER;
+      break;
+  }
+  return result;
+}
+
+template <>
+constexpr ParagraphAlignment ConvertTo(
+    DWRITE_PARAGRAPH_ALIGNMENT paragraphAlignment) {
+  ParagraphAlignment result = ParagraphAlignment::Near;
+  switch (paragraphAlignment) {
+    case DWRITE_PARAGRAPH_ALIGNMENT_NEAR:
+      result = ParagraphAlignment::Near;
+      break;
+    case DWRITE_PARAGRAPH_ALIGNMENT_FAR:
+      result = ParagraphAlignment::Far;
+      break;
+    case DWRITE_PARAGRAPH_ALIGNMENT_CENTER:
+      result = ParagraphAlignment::Center;
+      break;
+  }
+  return result;
+}
+
+template <>
+constexpr DWRITE_WORD_WRAPPING ConvertTo(WordWrapping paragraphAlignment) {
+  DWRITE_WORD_WRAPPING result = DWRITE_WORD_WRAPPING_WRAP;
+  switch (paragraphAlignment) {
+    case WordWrapping::Wrap:
+      result = DWRITE_WORD_WRAPPING_WRAP;
+      break;
+    case WordWrapping::NoWrap:
+      result = DWRITE_WORD_WRAPPING_NO_WRAP;
+      break;
+    case WordWrapping::EmergencyBreak:
+      result = DWRITE_WORD_WRAPPING_EMERGENCY_BREAK;
+      break;
+    case WordWrapping::WholeWord:
+      result = DWRITE_WORD_WRAPPING_WHOLE_WORD;
+      break;
+    case WordWrapping::Character:
+      result = DWRITE_WORD_WRAPPING_CHARACTER;
+      break;
+  }
+  return result;
+}
+
+template <>
+constexpr WordWrapping ConvertTo(DWRITE_WORD_WRAPPING paragraphAlignment) {
+  WordWrapping result = WordWrapping::Wrap;
+  switch (paragraphAlignment) {
+    case DWRITE_WORD_WRAPPING_WRAP:
+      result = WordWrapping::Wrap;
+      break;
+    case DWRITE_WORD_WRAPPING_NO_WRAP:
+      result = WordWrapping::NoWrap;
+      break;
+    case DWRITE_WORD_WRAPPING_EMERGENCY_BREAK:
+      result = WordWrapping::EmergencyBreak;
+      break;
+    case DWRITE_WORD_WRAPPING_WHOLE_WORD:
+      result = WordWrapping::WholeWord;
+      break;
+    case DWRITE_WORD_WRAPPING_CHARACTER:
+      result = WordWrapping::Character;
+      break;
+  }
+  return result;
+}
+
+template <>
+constexpr FontWeight ConvertTo(DWRITE_FONT_WEIGHT fontWeight) {
+  return static_cast<FontWeight>(fontWeight);
+}
+
+template <>
+constexpr DWRITE_FONT_WEIGHT ConvertTo(FontWeight fontWeight) {
+  return static_cast<DWRITE_FONT_WEIGHT>(fontWeight);
+}
+
+class DWriteTextFormat : public TextFormat {
+ public:
+  explicit DWriteTextFormat(ComPtr<IDWriteTextFormat> textFormat)
+      : textFormat_(std::move(textFormat)) {}
+
+  ComPtr<IDWriteTextFormat> getTextFormat() const { return textFormat_; }
+
+  String getFontFamilyName() const override {
+    String buffer;
+    auto length = textFormat_->GetFontFamilyNameLength();
+    buffer.reserve(length);
+    WarnIfFailed(textFormat_->GetFontFamilyName(&buffer[0], length));
+    return buffer;
+  }
+
+  float getSize() const override { return textFormat_->GetFontSize(); }
+
+  void setTextAlignment(TextAlignment textAlignment) override {
+    WarnIfFailed(textFormat_->SetTextAlignment(
+        ConvertTo<DWRITE_TEXT_ALIGNMENT>(textAlignment)));
+  }
+
+  TextAlignment getTextAlignment() const override {
+    return ConvertTo<TextAlignment>(textFormat_->GetTextAlignment());
+  }
+
+  void setParagraphAlignment(ParagraphAlignment paragraphAlignment) override {
+    WarnIfFailed(textFormat_->SetParagraphAlignment(
+        ConvertTo<DWRITE_PARAGRAPH_ALIGNMENT>(paragraphAlignment)));
+  }
+
+  ParagraphAlignment getParagraphAlignment() const override {
+    return ConvertTo<ParagraphAlignment>(textFormat_->GetParagraphAlignment());
+  }
+
+  void setWordWrapping(WordWrapping wordWrapping) override {
+    WarnIfFailed(textFormat_->SetWordWrapping(
+        ConvertTo<DWRITE_WORD_WRAPPING>(wordWrapping)));
+  }
+
+  WordWrapping getWordWrapping() const override {
+    return ConvertTo<WordWrapping>(textFormat_->GetWordWrapping());
+  }
+
+  int getWeight() const override { return textFormat_->GetFontWeight(); }
+
+ private:
+  ComPtr<IDWriteTextFormat> textFormat_;
 };
 /*******************************************************************************
  * DirectX Type Helper Functions
@@ -108,16 +310,8 @@ static ComPtr<ID2D1StrokeStyle> ToD2DStrokeStyle(
 static ComPtr<ID2D1Bitmap1> ToD2DBitmap(const Bitmap* bitmap) {
   return ComPtr<ID2D1Bitmap1>();
 }
-/*******************************************************************************
- * class ComException
- ******************************************************************************/
-struct ComException : std::exception {
-  HRESULT const hr;
-  explicit ComException(HRESULT const value) : hr(value) {}
-};
-
-inline void ThrowIfFailed(HRESULT const hr) {
-  if (S_OK != hr) throw ComException(hr);
+static ComPtr<IDWriteTextFormat> ToWriteTextFormat(const TextFormat* font) {
+  return dynamic_cast<const DWriteTextFormat*>(font)->getTextFormat();
 }
 /*******************************************************************************
  * class DirectXRes
@@ -132,6 +326,8 @@ ComPtr<ID2D1Factory1> DirectXRes::d2dFactory_;
 ComPtr<ID2D1Device> DirectXRes::d2dDevice_;
 
 ComPtr<IWICImagingFactory> DirectXRes::imagingFactory_;
+
+ComPtr<IDWriteFactory1> DirectXRes::dWriteFactory_;
 
 void DirectXRes::init() { createDeviceResources(); }
 
@@ -164,6 +360,15 @@ inline ComPtr<ID2D1Factory1> DirectXRes::getD2DFactory() {
 inline ComPtr<ID2D1Device> DirectXRes::getD2DDevice() {
   assert(d2dDevice_);
   return d2dDevice_;
+}
+
+inline ComPtr<IDWriteFactory1> DirectXRes::getDWriteFactory() {
+  if (dWriteFactory_ == nullptr) {
+    DWriteCreateFactory(
+        DWRITE_FACTORY_TYPE_SHARED, __uuidof(dWriteFactory_),
+        reinterpret_cast<IUnknown**>(dWriteFactory_.GetAddressOf()));
+  }
+  return dWriteFactory_;
 }
 
 ComPtr<IWICImagingFactory> DirectXRes::getImagingFactory() {
@@ -354,8 +559,11 @@ void D2DContext2D::drawBitmap(const Bitmap* bitmap,
   }
 }
 
-void D2DContext2D::drawText(const PointF& position, const Font& font,
-                            const String& text) {}
+void D2DContext2D::drawText(const String& text, const TextFormat* font,
+                            const RectF& rect, const Brush* brush) {
+  context_->DrawTextW(text.c_str(), text.size(), ToWriteTextFormat(font).Get(),
+                      ToD2DRectF(rect), ToD2DBrush(brush).Get());
+}
 
 std::unique_ptr<Brush> D2DContext2D::createSolidBrush(const ColorF& color) {
   ComPtr<ID2D1SolidColorBrush> brush;
@@ -440,5 +648,17 @@ bool D2DContext2D::endDraw() {
     ThrowIfFailed(hr);
   }
   return true;
+}
+
+std::unique_ptr<TextFormat> D2DContext2D::createTextFormat(const String& name,
+                                                           float size,
+                                                           FontWeight weight) {
+  ComPtr<IDWriteTextFormat> textFormat;
+  auto factory = DirectXRes::getDWriteFactory();
+  ThrowIfFailed(factory->CreateTextFormat(
+      name.c_str(), nullptr, ConvertTo<DWRITE_FONT_WEIGHT>(weight),
+      DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, size, TEXT(""),
+      &textFormat));
+  return std::make_unique<DWriteTextFormat>(std::move(textFormat));
 }
 }  // namespace yuki

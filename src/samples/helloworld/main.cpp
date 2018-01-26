@@ -5,23 +5,30 @@
 using namespace yuki;
 
 class MyView : public View {
+ public:
+  virtual ~MyView() = default;
+
  protected:
   void onRender(Context2D* context) override {
     View::onRender(context);
 
-    if (brush == nullptr) {
-      brush = context->createSolidBrush(Color::DarkViolet);
+    if (!initialized_) {
+      brush_ = context->createSolidBrush(Color::DarkViolet);
+      font_ = context->createTextFormat(TEXT("Verdana"), 72.0f);
     }
-    LineF line(2, 2, 100, 100);
+
     context->begin();
-    context->drawLine(line, brush.get());
-    context->drawCircle(CircleF{100, 100, 25}, brush.get());
+    context->drawLine({2, 2, 100, 100}, brush_.get());
+    context->drawCircle({100, 100, 25}, brush_.get());
+    context->drawText(TEXT("Hello World!"), font_.get(), {0, 0, 1000, 1000},
+                      brush_.get());
     context->end();
   }
 
- public:
-  std::unique_ptr<Brush> brush;
-  virtual ~MyView() = default;
+ private:
+  bool initialized_ = false;
+  std::unique_ptr<Brush> brush_;
+  std::unique_ptr<TextFormat> font_;
 };
 
 int main() {

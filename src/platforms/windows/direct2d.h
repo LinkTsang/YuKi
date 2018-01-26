@@ -2,7 +2,6 @@
 
 #include <Wincodec.h>
 #include <d2d1_1.h>
-#include <d2d1effects.h>
 #include <d3d11_1.h>
 #include <dwrite_1.h>
 #include <windows.h>
@@ -28,6 +27,8 @@ class DirectXRes {
   static Microsoft::WRL::ComPtr<ID2D1Factory1> getD2DFactory();
   static Microsoft::WRL::ComPtr<ID2D1Device> getD2DDevice();
 
+  static Microsoft::WRL::ComPtr<IDWriteFactory1> getDWriteFactory();
+
   static Microsoft::WRL::ComPtr<IWICImagingFactory> getImagingFactory();
 
   static std::unique_ptr<D2DContext2D> createContextFromHWnd(HWND hWnd);
@@ -43,6 +44,7 @@ class DirectXRes {
 
   static Microsoft::WRL::ComPtr<IWICImagingFactory> imagingFactory_;
 
+  static Microsoft::WRL::ComPtr<IDWriteFactory1> dWriteFactory_;
   static void createDeviceResources();
 
   static HRESULT createD3D11Device(
@@ -91,10 +93,13 @@ class D2DContext2D : public Context2D {
                   float opacity, BitmapInterpolationMode mode,
                   const RectF* sourceRectangle) override;
 
-  void drawText(const PointF& position, const Font& font,
-                const String& text) override;
+  void drawText(const String& text, const TextFormat* font, const RectF& rect,
+                const Brush* brush) override;
 
   std::unique_ptr<Brush> createSolidBrush(const ColorF& color) override;
+  std::unique_ptr<TextFormat> createTextFormat(const String& name, float size,
+                                               FontWeight weight) override;
+
   std::unique_ptr<Bitmap> loadBitmap(const String& filename) override;
 
  private:
@@ -109,6 +114,7 @@ class D2DContext2D : public Context2D {
   void beginDraw();
   bool endDraw();
 
+ private:
   friend class NativeWindowManager;
 };
 }  // namespace yuki

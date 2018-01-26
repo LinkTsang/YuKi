@@ -64,8 +64,8 @@ class Context2D {
       BitmapInterpolationMode mode = BitmapInterpolationMode::Linear,
       const RectF* sourceRectangle = nullptr) = 0;
 
-  virtual void drawText(const PointF& position, const Font& font,
-                        const String& text) = 0;
+  virtual void drawText(const String& text, const TextFormat* font,
+                        const RectF& rect, const Brush* brush) = 0;
 
   virtual void pushClip(const RectF& rect) = 0;
   virtual void popClip() = 0;
@@ -74,6 +74,9 @@ class Context2D {
   virtual void getDpi(float* dpiX, float* dpiY) = 0;
 
   virtual std::unique_ptr<Brush> createSolidBrush(const ColorF& color) = 0;
+  virtual std::unique_ptr<TextFormat> createTextFormat(
+      const String& name, float size,
+      FontWeight weight = FontWeight::Normal) = 0;
   virtual std::unique_ptr<Bitmap> loadBitmap(const String& filename) = 0;
 
  protected:
