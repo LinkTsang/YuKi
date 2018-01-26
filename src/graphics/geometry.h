@@ -1,5 +1,4 @@
-#ifndef YUKI_GEOMETRY_H
-#define YUKI_GEOMETRY_H
+#pragma once
 
 namespace yuki {
 class Matrix3x2F {
@@ -90,7 +89,6 @@ class TLine {
   TLine(const TPoint<T>& p1, const TPoint<T>& p2) : p1_(p1), p2_(p2) {}
   TLine(T x1, T y1, T x2, T y2) : p1_(x1, y1), p2_(x2, y2) {}
 
-  
   constexpr T x1() const { return p1_.x(); }
   constexpr T y1() const { return p1_.y(); }
   constexpr void setX1(T x1) { p1_.setX(x1); }
@@ -123,8 +121,9 @@ using LineF = TLine<float>;
 template <typename T>
 class TRect {
  public:
+  TRect() : TRect(0, 0, 0, 0) {}
   constexpr TRect(T left, T top, T right, T bottom)
-      : left_(left_), top_(top), right_(right), bottom_(bottom) {}
+      : left_(left), top_(top), right_(right), bottom_(bottom) {}
 
   constexpr T right() const { return right_; }
   constexpr T bottom() const { return bottom_; }
@@ -215,5 +214,3 @@ class TCircle {
 using Circle = TCircle<int>;
 using CircleF = TCircle<float>;
 }  // namespace yuki
-
-#endif  // !YUKI_GEOMETRY_H
