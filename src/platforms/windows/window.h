@@ -29,6 +29,7 @@ class NativeWindowImpl : public INativeWindow {
   void moveToCenter() override;
   void moveTo(const Point& p) override;
   void setWindowState(WindowState state) override;
+  Size getSize() override;
  private:
   static const TCHAR DEFAULT_WINDOW_TITLE[];
   friend class NativeWindowManager;

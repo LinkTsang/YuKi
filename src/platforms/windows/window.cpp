@@ -126,4 +126,10 @@ void NativeWindowImpl::setWindowState(WindowState state) {
       break;
   }
 }
+
+Size NativeWindowImpl::getSize() {
+  RECT rect;
+  ::GetClientRect(hWnd_, &rect);
+  return {rect.right - rect.left, rect.top - rect.bottom};
+}
 }  // namespace yuki

@@ -22,6 +22,7 @@ class INativeWindow {
   virtual void moveToCenter() = 0;
   virtual void moveTo(const Point& p) = 0;
 
+  virtual Size getSize() = 0;
   virtual ~INativeWindow();
 };
 
