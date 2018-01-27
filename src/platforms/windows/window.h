@@ -20,16 +20,17 @@ class NativeWindowImpl : public INativeWindow {
  public:
   NativeWindowImpl();
   explicit NativeWindowImpl(const std::shared_ptr<View>& view);
-  void show() override;
-  void hide() override;
-  void setTitle(const String& title) override;
   void setView(const std::shared_ptr<View>& view) override;
 
-  String getTitle() const override;
-  void moveToCenter() override;
-  void moveTo(const Point& p) override;
+  WindowState getWindowState() override;
   void setWindowState(WindowState state) override;
-  Size getSize() override;
+
+  void setTitle(const String& title) override;
+  String getTitle() const override;
+
+  Rect getBounds() const override;
+  void setBounds(const Rect& bounds) override;
+  
  private:
   static const TCHAR DEFAULT_WINDOW_TITLE[];
   friend class NativeWindowManager;

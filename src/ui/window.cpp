@@ -7,5 +7,5 @@ INativeWindow::~INativeWindow() = default;
 
 Window::Window() : Window(std::make_shared<View>()) {}
 
-Window::Window(const std::shared_ptr<View>& view) : nativeWindow_(std::make_unique<NativeWindowImpl>(view)) {}
+Window::Window(const std::shared_ptr<View>& view) : w_(std::make_unique<NativeWindowImpl>(view)) {}
 }  // namespace yuki
