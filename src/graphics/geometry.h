@@ -134,6 +134,9 @@ class TRect {
   constexpr void setLeft(T left) { left_ = left; }
   constexpr void setTop(T top) { top_ = top; }
 
+  constexpr T width() const { return right_ - left_; }
+  constexpr T height() const { return top_ - bottom_; }
+
  private:
   T left_;
   T top_;
