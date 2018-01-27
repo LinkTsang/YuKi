@@ -8,8 +8,8 @@ set(YUKI_SOURCE_LIST
   "core/app.h"
   "core/debug.cpp"
   "core/debug.h"
-  # "core/string.cpp"
-  # "core/string.h"
+  "core/object.cpp"
+  "core/object.h"
   "core/string.hpp"
 
   "graphics/bitmap.cpp"
