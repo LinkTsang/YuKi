@@ -17,9 +17,8 @@ namespace yuki {
 using Microsoft::WRL::ComPtr;
 
 template <typename R, typename S>
-static constexpr R ConvertTo(S) {
-  static_assert(false, "Required to implement.");
-  return {};
+static constexpr R ConvertTo(S s) {
+  return static_cast<R>(s);
 }
 
 /*******************************************************************************
