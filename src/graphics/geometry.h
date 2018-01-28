@@ -43,7 +43,7 @@ public:
   }
 
   static Transform2D rotation(float theta);
-  static Transform2D rotation(float x, float y, float theat);
+  static Transform2D rotation(float x, float y, float theta);
   static Transform2D skew(float px, float py, float theta, float phi);
 };
 
