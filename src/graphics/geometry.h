@@ -189,8 +189,8 @@ public:
 
   constexpr T radiusX() const { return radiusX_; }
   constexpr T radiusY() const { return radiusY_; }
-  constexpr void setRadiusX(T radiusX) { radiusX = radiusX_; }
-  constexpr void setRadiusY(T radiusY) { radiusY = radiusY_; }
+  constexpr void setRadiusX(T radiusX) { radiusX_ = radiusX; }
+  constexpr void setRadiusY(T radiusY) { radiusY_ = radiusY; }
 
 private:
   T radiusX_;
