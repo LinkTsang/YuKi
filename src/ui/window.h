@@ -1,5 +1,4 @@
-#ifndef YUKI_WINDOW_H_
-#define YUKI_WINDOW_H_
+#pragma once
 
 #include <memory>
 #include "core/string.hpp"
@@ -9,7 +8,14 @@ namespace yuki {
 enum class WindowState { Shown, Hidden, Restore, Maximized, Minimized };
 
 class INativeWindow {
- public:
+public:
+  INativeWindow() = default;
+  INativeWindow(const INativeWindow&) = default;
+  INativeWindow(INativeWindow&&) = default;
+  INativeWindow& operator=(const INativeWindow&) = default;
+  INativeWindow& operator=(INativeWindow&&) = default;
+  virtual ~INativeWindow() = default;
+
   virtual void setView(const std::shared_ptr<View>& view) = 0;
 
   virtual String getTitle() const = 0;
@@ -20,14 +26,18 @@ class INativeWindow {
 
   virtual WindowState getWindowState() = 0;
   virtual void setWindowState(WindowState state) = 0;
-
-  virtual ~INativeWindow();
 };
 
-class Window {
- public:
+class Window : YuKi::Object {
+public:
   Window();
   explicit Window(const std::shared_ptr<View>& view);
+  Window(const Window&) = delete;
+  Window(Window&&) = default;
+  Window& operator=(const Window&) = delete;
+  Window& operator=(Window&&) = default;
+  virtual ~Window() = default;
+
   void setView(const std::shared_ptr<View>& view) { w_->setView(view); }
 
   void show() { w_->setWindowState(WindowState::Shown); }
@@ -44,9 +54,7 @@ class Window {
   Rect getBounds() const { return w_->getBounds(); }
   void setBounds(const Rect& bounds) { w_->setBounds(bounds); }
 
- private:
+private:
   std::unique_ptr<INativeWindow> w_;
 };
-}  // namespace yuki
-
-#endif  // !YUKI_WINDOW_H_
+} // namespace yuki

@@ -1,16 +1,13 @@
-#ifndef TYPEDEF_H_
-#define TYPEDEF_H_
+#pragma once
 
 #ifndef TEXT
 
 #ifdef UNICODE
 #define TEXT(quote) L##quote
 
-#else // !UNICODE
+#else  // !UNICODE
 #define TEXT(quote) quote
 
 #endif
 
 #endif
-
-#endif  // !TYPEDEF_H_

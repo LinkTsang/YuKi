@@ -1,5 +1,4 @@
-#ifndef YUKI_PAINTER_H
-#define YUKI_PAINTER_H
+#pragma once
 
 #include <memory>
 #include "core/string.hpp"
@@ -10,17 +9,22 @@
 #include "graphics/geometry.h"
 
 namespace yuki {
-class StrokeStyle {
- public:
+class StrokeStyle : YuKi::Object {
+public:
+  StrokeStyle() = default;
+  StrokeStyle(const StrokeStyle&) = default;
+  StrokeStyle(StrokeStyle&&) = default;
+  StrokeStyle& operator=(const StrokeStyle&) = default;
+  StrokeStyle& operator=(StrokeStyle&&) = default;
   virtual ~StrokeStyle() = 0;
 };
-class Context2D {
- public:
+
+class Context2D : YuKi::Object {
+public:
   Context2D(const Context2D&) = delete;
   Context2D(Context2D&&) = delete;
   Context2D& operator=(const Context2D&) = delete;
   Context2D& operator=(Context2D&&) = delete;
-
   virtual ~Context2D() = default;
 
   virtual void resetSize(SizeF size) = 0;
@@ -59,10 +63,10 @@ class Context2D {
                                const Brush* brush) = 0;
 
   virtual void drawBitmap(
-      const Bitmap* bitmap, const RectF* destionationRectangle = nullptr,
-      float opacity = 1.0f,
-      BitmapInterpolationMode mode = BitmapInterpolationMode::Linear,
-      const RectF* sourceRectangle = nullptr) = 0;
+    const Bitmap* bitmap, const RectF* destionationRectangle = nullptr,
+    float opacity = 1.0f,
+    BitmapInterpolationMode mode = BitmapInterpolationMode::Linear,
+    const RectF* sourceRectangle = nullptr) = 0;
 
   virtual void drawText(const String& text, const TextFormat* font,
                         const RectF& rect, const Brush* brush) = 0;
@@ -75,13 +79,11 @@ class Context2D {
 
   virtual std::unique_ptr<Brush> createSolidBrush(const ColorF& color) = 0;
   virtual std::unique_ptr<TextFormat> createTextFormat(
-      const String& name, float size,
-      FontWeight weight = FontWeight::Normal) = 0;
+    const String& name, float size,
+    FontWeight weight = FontWeight::Normal) = 0;
   virtual std::unique_ptr<Bitmap> loadBitmap(const String& filename) = 0;
 
- protected:
+protected:
   Context2D() = default;
 };
-}  // namespace yuki
-
-#endif  // !YUKI_PAINTER_H
+} // namespace yuki

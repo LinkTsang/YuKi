@@ -1,8 +1,8 @@
 #pragma once
+#include "core/object.h"
+#include "core/string.hpp"
 
-#include <core/string.hpp>
 namespace yuki {
-
 /// <summary>
 /// Alignment of paragraph text along the reading direction axis relative to
 /// the leading and trailing edge of the layout box.
@@ -182,10 +182,14 @@ enum class FontWeight {
   UltraBlack = 950
 };
 
-class TextFormat {
- public:
-  TextFormat();
-  virtual ~TextFormat();
+class TextFormat : public YuKi::Object {
+public:
+  TextFormat() = default;
+  TextFormat(const TextFormat&) = default;
+  TextFormat(TextFormat&&) = default;
+  TextFormat& operator=(const TextFormat&) = default;
+  TextFormat& operator=(TextFormat&&) = default;
+  virtual ~TextFormat() = default;
   virtual String getFontFamilyName() const = 0;
   virtual float getSize() const = 0;
   virtual int getWeight() const = 0;
@@ -196,5 +200,4 @@ class TextFormat {
   virtual void setWordWrapping(WordWrapping wordWrapping) = 0;
   virtual WordWrapping getWordWrapping() const = 0;
 };
-
-}  // namespace yuki
+} // namespace yuki

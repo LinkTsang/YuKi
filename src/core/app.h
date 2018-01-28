@@ -2,9 +2,8 @@
 
 namespace yuki {
 class App {
- public:
+public:
   static void init();
   static int run();
-
 };
-};  // namespace yuki
+}; // namespace yuki

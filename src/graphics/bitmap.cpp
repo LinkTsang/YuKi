@@ -1,5 +1,3 @@
 #include "bitmap.h"
 
-namespace yuki {
-Bitmap::~Bitmap() {}
-}  // namespace yuki
+namespace yuki {} // namespace yuki

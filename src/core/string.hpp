@@ -8,4 +8,4 @@ using String = std::wstring;
 #else
 using String = std::string;
 #endif
-}  // namespace yuki
+} // namespace yuki
