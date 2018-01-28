@@ -43,8 +43,14 @@ inline void WarnIfFailed(HRESULT const hr) {
  ******************************************************************************/
 class D2DDeviceDependentRes {
 public:
-  virtual void recreate() { };
+  D2DDeviceDependentRes() = default;
+  D2DDeviceDependentRes(const D2DDeviceDependentRes&) = default;
+  D2DDeviceDependentRes(D2DDeviceDependentRes&&) = default;
+  D2DDeviceDependentRes& operator=(const D2DDeviceDependentRes&) = default;
+  D2DDeviceDependentRes& operator=(D2DDeviceDependentRes&&) = default;
   virtual ~D2DDeviceDependentRes() = default;
+
+  virtual void recreate() {}
 };
 
 /*******************************************************************************
@@ -52,8 +58,14 @@ public:
  ******************************************************************************/
 class D2DBrush : public D2DDeviceDependentRes {
 public:
-  virtual ComPtr<ID2D1Brush> getD2DBrush() const = 0;
+  D2DBrush() = default;
+  D2DBrush(const D2DBrush&) = default;
+  D2DBrush(D2DBrush&&) = default;
+  D2DBrush& operator=(const D2DBrush&) = default;
+  D2DBrush& operator=(D2DBrush&&) = default;
   virtual ~D2DBrush() = default;
+
+  virtual ComPtr<ID2D1Brush> getD2DBrush() const = 0;
 };
 
 /*******************************************************************************
@@ -61,6 +73,12 @@ public:
  ******************************************************************************/
 class D2DSolidColorBrush : public SolidColorBrush, public D2DBrush {
 public:
+  D2DSolidColorBrush() = default;
+  D2DSolidColorBrush(const D2DSolidColorBrush&) = default;
+  D2DSolidColorBrush(D2DSolidColorBrush&&) = default;
+  D2DSolidColorBrush& operator=(const D2DSolidColorBrush&) = default;
+  D2DSolidColorBrush& operator=(D2DSolidColorBrush&&) = default;
+
   explicit D2DSolidColorBrush(ComPtr<ID2D1SolidColorBrush> brush)
     : brush_(std::move(brush)) { }
 
@@ -73,12 +91,15 @@ private:
 
 class D2DBitmap : public Bitmap, public D2DDeviceDependentRes {
 public:
-  explicit
-  D2DBitmap(ComPtr<ID2D1Bitmap> bitmap) : bitmap_(std::move(bitmap)) { }
-
-  virtual ComPtr<ID2D1Bitmap> getD2DBitmap() const { return bitmap_; }
+  D2DBitmap() = default;
+  explicit D2DBitmap(ComPtr<ID2D1Bitmap> bitmap) : bitmap_(std::move(bitmap)) {}
+  D2DBitmap(const D2DBitmap&) = default;
+  D2DBitmap(D2DBitmap&&) = default;
+  D2DBitmap& operator=(const D2DBitmap&) = default;
+  D2DBitmap& operator=(D2DBitmap&&) = default;
   virtual ~D2DBitmap() = default;
 
+  virtual ComPtr<ID2D1Bitmap> getD2DBitmap() const { return bitmap_; }
 private:
   ComPtr<ID2D1Bitmap> bitmap_;
 };
