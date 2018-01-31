@@ -162,7 +162,7 @@ public:
   constexpr void setTop(T top) { top_ = top; }
 
   constexpr T width() const { return right_ - left_; }
-  constexpr T height() const { return top_ - bottom_; }
+  constexpr T height() const { return bottom_ - top_; }
 
 private:
   T left_;
