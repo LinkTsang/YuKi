@@ -5,6 +5,7 @@
 #include "ui/view.h"
 
 namespace yuki {
+
 enum class WindowState { Shown, Hidden, Restore, Maximized, Minimized };
 
 class INativeWindow {
@@ -28,7 +29,7 @@ public:
   virtual void setWindowState(WindowState state) = 0;
 };
 
-class Window : YuKi::Object {
+class Window : Object {
 public:
   Window();
   explicit Window(const std::shared_ptr<View>& view);

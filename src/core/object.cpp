@@ -1,3 +1,3 @@
 #include "object.h"
 
-namespace YuKi {} // namespace YuKi
+namespace yuki {} // namespace yuki

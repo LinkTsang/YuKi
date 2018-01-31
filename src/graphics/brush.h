@@ -2,7 +2,7 @@
 #include "core/object.h"
 
 namespace yuki {
-class Brush : public YuKi::Object {
+class Brush : public Object {
 public:
   Brush() = default;
   Brush(const Brush&) = default;

@@ -2,7 +2,7 @@
 #include "core/object.h"
 
 namespace yuki {
-class Bitmap : public YuKi::Object {
+class Bitmap : public Object {
 public:
   Bitmap() = default;
   Bitmap(const Bitmap&) = default;

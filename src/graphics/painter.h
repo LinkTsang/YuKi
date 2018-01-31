@@ -9,7 +9,7 @@
 #include "graphics/geometry.h"
 
 namespace yuki {
-class StrokeStyle : YuKi::Object {
+class StrokeStyle : Object {
 public:
   StrokeStyle() = default;
   StrokeStyle(const StrokeStyle&) = default;
@@ -19,7 +19,7 @@ public:
   virtual ~StrokeStyle() = 0;
 };
 
-class Context2D : YuKi::Object {
+class Context2D : Object {
 public:
   Context2D(const Context2D&) = delete;
   Context2D(Context2D&&) = delete;

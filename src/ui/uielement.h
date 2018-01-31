@@ -3,7 +3,7 @@
 #include "graphics/painter.h"
 
 namespace yuki {
-class UIElement : public YuKi::Object {
+class UIElement : public Object {
 public:
   UIElement() = default;
   UIElement(const UIElement&) = default;

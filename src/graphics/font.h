@@ -182,7 +182,7 @@ enum class FontWeight {
   UltraBlack = 950
 };
 
-class TextFormat : public YuKi::Object {
+class TextFormat : public Object {
 public:
   TextFormat() = default;
   TextFormat(const TextFormat&) = default;

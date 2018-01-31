@@ -1,6 +1,6 @@
 #pragma once
 
-namespace YuKi {
+namespace yuki {
 class Object {
 public:
   Object() = default;
@@ -10,4 +10,4 @@ public:
   Object& operator=(Object&&) = default;
   virtual ~Object() = default;
 };
-} // namespace YuKi
+} // namespace yuki
