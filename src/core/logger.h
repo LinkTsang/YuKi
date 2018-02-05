@@ -47,14 +47,53 @@ inline Logger& operator<<(Logger& logger, const String& message) {
   return logger;
 }
 
-template <typename Type>
-inline Logger& operator<<(Logger& logger, Type&& value) {
-  logger << ToString(std::forward<Type>(value));
+inline Logger& operator<<(Logger& logger, const int value) {
+  logger << ToString(value);
+  return logger;
+}
+
+inline Logger& operator<<(Logger& logger, const long value) {
+  logger << ToString(value);
+  return logger;
+}
+
+inline Logger& operator<<(Logger& logger, const long long value) {
+  logger << ToString(value);
+  return logger;
+}
+
+inline Logger& operator<<(Logger& logger, const unsigned int value) {
+  logger << ToString(value);
+  return logger;
+}
+
+inline Logger& operator<<(Logger& logger, const unsigned long value) {
+  logger << ToString(value);
+  return logger;
+}
+
+inline Logger& operator<<(Logger& logger, const unsigned long long value) {
+  logger << ToString(value);
+  return logger;
+}
+
+inline Logger& operator<<(Logger& logger, const float value) {
+  logger << ToString(value);
+  return logger;
+}
+
+inline Logger& operator<<(Logger& logger, const double value) {
+  logger << ToString(value);
+  return logger;
+}
+
+inline Logger& operator<<(Logger& logger, const long double value) {
+  logger << ToString(value);
   return logger;
 }
 
 template <typename T>
-inline Logger& operator<<(Logger&& logger, const T& value) {
-  return logger << value;
+Logger& operator<<(Logger&& logger, T&& value) {
+  return logger << std::forward<T>(value);
 }
 } // namespace yuki
