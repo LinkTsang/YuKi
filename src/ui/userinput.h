@@ -89,6 +89,29 @@ private:
   WindowState state_;
 };
 
+class WindowMovingEventArgs : public GuiEventArgs {
+public:
+  explicit WindowMovingEventArgs(const Rect& rect) : rect_(rect) {}
+  const Rect& getRect() const { return rect_; }
+  void setRect(const Rect& rect) { rect_ = rect; }
+private:
+  Rect rect_;
+};
+
+class WindowMovedEventArgs : public GuiEventArgs {
+public:
+  explicit WindowMovedEventArgs(const Point& position) :
+    position_(position) {}
+
+  //The x and y coordinates of the upper - left corner of the client area of the window.
+  const Point& getNewPosition() const {
+    return position_;
+  }
+
+private:
+  Point position_;
+};
+
 /*******************************************************************************
 * Mouse Event
 ******************************************************************************/

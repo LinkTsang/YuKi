@@ -11,5 +11,6 @@ void Window::activateEvent(ActivateEventArgs* args) {}
 void Window::closingEvent(ClosingEventArgs* args) {}
 void Window::closedEvent() {}
 void Window::windowStateChangeEvent(WindowStateChangedEventArgs* args) {}
-
+void Window::movingEvent(WindowMovingEventArgs* args) {}
+void Window::movedEvent(WindowMovedEventArgs* args) {}
 } // namespace yuki

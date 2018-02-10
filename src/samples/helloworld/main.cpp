@@ -174,6 +174,27 @@ public:
       << static_cast<int>(args->state());
   }
 
+  void movingEvent(WindowMovingEventArgs* args) override {
+    const auto& rect = args->getRect();
+    Logger::trace()
+      << TEXT("movingEvent: ")
+      << rect.left()
+      << TEXT(", ")
+      << rect.top()
+      << TEXT(", ")
+      << rect.right()
+      << TEXT(", ")
+      << rect.bottom();
+  }
+
+  void movedEvent(WindowMovedEventArgs* args) override {
+    const auto& positon = args->getNewPosition();
+    Logger::trace()
+      << TEXT("movedEvent: ")
+      << positon.x()
+      << TEXT(", ")
+      << positon.y();
+  }
 };
 
 int main() {

@@ -63,6 +63,8 @@ public:
   virtual void closingEvent(ClosingEventArgs* closed);
   virtual void closedEvent();
   virtual void windowStateChangeEvent(WindowStateChangedEventArgs* args);
+  virtual void movingEvent(WindowMovingEventArgs* args);
+  virtual void movedEvent(WindowMovedEventArgs* args);
 protected:
   std::unique_ptr<INativeWindow> w_;
 };

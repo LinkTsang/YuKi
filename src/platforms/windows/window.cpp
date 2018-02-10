@@ -108,6 +108,24 @@ LRESULT NativeWindowManager::WndProc(HWND hWnd, UINT message, WPARAM wParam,
       EndPaint(hWnd, &ps);
       break;
     }
+    case WM_MOVING: {
+      const auto pRect = reinterpret_cast<LPRECT>(lParam);
+      WindowMovingEventArgs args{
+        {pRect->left, pRect->top, pRect->right, pRect->bottom}
+      };
+      w->movingEvent(&args);
+      const auto& newRect = args.getRect();
+      pRect->left = newRect.left();
+      pRect->top = newRect.top();
+      pRect->right = newRect.right();
+      pRect->bottom = newRect.bottom();
+      break;
+    }
+    case WM_MOVE: {
+      WindowMovedEventArgs args{{GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)}};
+      w->movedEvent(&args);
+      break;
+    }
     case WM_SIZE: {
       Size size{LOWORD(lParam), HIWORD(lParam)};
       const SizeF sizeF{float(size.width()), float(size.height())};
