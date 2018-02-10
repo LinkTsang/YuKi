@@ -276,8 +276,16 @@ Rect NativeWindowImpl::getBounds() const {
 }
 
 void NativeWindowImpl::setBounds(const Rect& bounds) {
-  MoveWindow(hWnd_, bounds.left(), bounds.top(), bounds.width(),
-             bounds.height(), FALSE);
+  RECT rect{bounds.left(), bounds.top(), bounds.right(), bounds.bottom()};
+  const auto bMenu = ::GetMenu(hWnd_) != nullptr;
+  const auto dwStyle = ::GetWindowLong(hWnd_, GWL_STYLE);
+  const auto dwExStyle = ::GetWindowLong(hWnd_, GWL_EXSTYLE);
+  ::AdjustWindowRectEx(&rect, dwStyle, bMenu, dwExStyle);
+  ::MoveWindow(hWnd_, bounds.left(),
+               bounds.top(),
+               rect.right - rect.left,
+               rect.bottom - rect.top,
+               TRUE);
 }
 
 } // namespace yuki
