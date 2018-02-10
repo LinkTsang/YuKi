@@ -1,74 +1,11 @@
 #include "window.h"
 #include <Windows.h>
 #include <Windowsx.h>
-#include "graphics/painter.h"
 #include "platforms/windows/direct2d.h"
 #include "platforms/windows/nativeapp.h"
+#include "platforms/windows/userinput.h"
 
 namespace yuki {
-class EventArgs {
-public:
-  EventArgs() = default;
-};
-
-enum class MouseKeyStateMask {
-  LButton = 0x0001,
-  RButton = 0x0002,
-  Shift = 0x0004,
-  Control = 0x0008,
-  MButton = 0x0010,
-  XButton1 = 0x0020,
-  XButton2 = 0x0040
-};
-
-class MouseEventArgs : public EventArgs {
-public:
-  MouseEventArgs(Point position, int mouseKeyState, int delta)
-    : position_(position),
-      mouseKeyState_(mouseKeyState),
-      delta_(delta) { };
-  const Point& position() const { return position_; }
-  int delta() const { return delta_; }
-
-  bool isLButtonDown() const {
-    return mouseKeyState_ & static_cast<int>(MouseKeyStateMask::LButton);
-  }
-
-  bool isRButtonDown() const {
-    return mouseKeyState_ & static_cast<int>(MouseKeyStateMask::RButton);
-  }
-
-  bool isShiftDown() const {
-    return mouseKeyState_ & static_cast<int>(MouseKeyStateMask::Shift);
-  }
-
-  bool isControlDown() const {
-    return mouseKeyState_ & static_cast<int>(MouseKeyStateMask::Control);
-  }
-
-  bool isMButtonDown() const {
-    return mouseKeyState_ & static_cast<int>(MouseKeyStateMask::MButton);
-  }
-
-  bool isXButton1Down() const {
-    return mouseKeyState_ & static_cast<int>(MouseKeyStateMask::XButton1);
-  }
-
-  bool isXButton2Down() const {
-    return mouseKeyState_ & static_cast<int>(MouseKeyStateMask::XButton2);
-  }
-
-private:
-  Point position_;
-  int mouseKeyState_;
-  int delta_;
-};
-
-class KeyEventArgs : public EventArgs {
-public:
-  KeyEventArgs() = default;
-};
-
 /*******************************************************************************
  * class NativeWindowManager
  ******************************************************************************/
@@ -88,7 +25,7 @@ void NativeWindowManager::init() {
   wcex.hInstance = NativeApp::getInstance();
   wcex.hIcon = nullptr; // LoadIcon(hInstance, MAKEINTRESOURCE(IDI_DEMO));
   wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
-  wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+  wcex.hbrBackground = HBRUSH(COLOR_WINDOW + 1);
   wcex.lpszMenuName = nullptr; // MAKEINTRESOURCEW(IDC_DEMO);
   wcex.lpszClassName = WINDOW_CLASS_NAME;
   wcex.hIconSm =
@@ -99,9 +36,13 @@ void NativeWindowManager::init() {
 
 LRESULT NativeWindowManager::WndProc(HWND hWnd, UINT message, WPARAM wParam,
                                      LPARAM lParam) {
-  NativeWindowImpl* w =
-    reinterpret_cast<NativeWindowImpl*>(GetWindowLong(hWnd, GWL_USERDATA));
-
+  auto* nativeWindow = reinterpret_cast<NativeWindowImpl*>(
+    GetWindowLong(hWnd, GWL_USERDATA));
+  if (nativeWindow == nullptr) {
+    return DefWindowProc(hWnd, message, wParam, lParam);
+  }
+  auto* w = nativeWindow->window_;
+  auto v = w->getView();
   if (WM_MOUSEFIRST <= message && message <= WM_MOUSELAST) {
     MouseEventArgs event_args{
       {GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)},
@@ -110,57 +51,120 @@ LRESULT NativeWindowManager::WndProc(HWND hWnd, UINT message, WPARAM wParam,
     };
     switch (message) {
       case WM_MOUSEMOVE:
+        v->mouseMoveEvent(&event_args);
         break;
       case WM_LBUTTONDOWN:
       case WM_RBUTTONDOWN:
       case WM_MBUTTONDOWN:
+        v->mouseButtonDownEvent(&event_args);
         break;
       case WM_LBUTTONUP:
       case WM_RBUTTONUP:
       case WM_MBUTTONUP:
+        v->mouseButtonUpEvent(&event_args);
         break;
       case WM_LBUTTONDBLCLK:
       case WM_RBUTTONDBLCLK:
       case WM_MBUTTONDBLCLK:
+        v->mouseButtonDoubleClickEvent(&event_args);
         break;
       case WM_MOUSEWHEEL:
+        v->mouseWheelEvent(&event_args);
         break;
       default:
         break;
     }
   }
   switch (message) {
+    case WM_ACTIVATE: {
+      if (LOWORD(wParam) == WA_ACTIVE || LOWORD(wParam) == WA_CLICKACTIVE) {
+        ActivateEventArgs args{true};
+        w->activateEvent(&args);
+      } else if (LOWORD(wParam) == WA_INACTIVE) {
+        ActivateEventArgs args{false};
+        w->activateEvent(&args);
+      }
+      break;
+    }
+    case WM_CLOSE: {
+      ClosingEventArgs args;
+      w->closingEvent(&args);
+      if (args.isClosed()) {
+        DestroyWindow(hWnd);
+      }
+      break;
+    }
+    case WM_DESTROY: {
+      PostQuitMessage(0);
+      break;
+    }
     case WM_PAINT: {
       PAINTSTRUCT ps;
       BeginPaint(hWnd, &ps);
-      w->context_->beginDraw();
-      w->view_->onRender(w->context_.get());
+      auto context = nativeWindow->context_.get();
+      context->beginDraw();
+      v->onRender(context);
+      context->endDraw();
       EndPaint(hWnd, &ps);
-      w->context_->endDraw();
-    }
       break;
+    }
     case WM_SIZE: {
-      RECT rect;
-      GetClientRect(hWnd, &rect);
-      SizeF size({
-        static_cast<float>(rect.right - rect.left),
-        static_cast<float>(rect.bottom - rect.top)
-      });
-
-      w->context_->resetSize(size);
+      Size size{LOWORD(lParam), HIWORD(lParam)};
+      const SizeF sizeF{float(size.width()), float(size.height())};
+      auto context = nativeWindow->context_.get();
+      context->resetSize(sizeF);
+      v->onRenderTargetChanged(context);
+      SizeChangedEventArgs args{size};
+      v->sizeChangedEvent(&args);
+      break;
     }
+    case WM_SIZING: {
+      const auto pRect = reinterpret_cast<LPRECT>(lParam);
+      SizeChangingEventArgs args{
+        static_cast<SizeChangingEventArgs::Edge>(wParam),
+        {pRect->left, pRect->top, pRect->right, pRect->bottom}
+      };
+      v->sizeChangingEvent(&args);
+      auto newRect = args.getRect();
+      pRect->left = newRect.left();
+      pRect->top = newRect.top();
+      pRect->right = newRect.right();
+      pRect->bottom = newRect.bottom();
       break;
-    case WM_SIZING:
-      break;
-    case WM_CLOSE: {
-      bool isClosed = true;
-      if (isClosed) DestroyWindow(hWnd);
     }
+    case WM_SHOWWINDOW: {
+      const auto shown = static_cast<BOOL>(wParam);
+      WindowState state;
+      if (shown) {
+        state = WindowState::Shown;
+      } else {
+        state = WindowState::Hidden;
+      }
+      WindowStateChangedEventArgs args(state);
+      w->windowStateChangeEvent(&args);
       break;
-    case WM_DESTROY: {
-      PostQuitMessage(0);
     }
+    case WM_KEYDOWN:
+    case WM_SYSKEYDOWN: {
+      WinKeyEventArgs args{static_cast<Key>(wParam)};
+      v->keyDownEvent(&args);
       break;
+    }
+    case WM_CHAR:
+    case WM_SYSCHAR: {
+      KeyCharEventArgs args{Char(wParam)};
+      v->keyCharEvent(&args);
+      break;
+    }
+    case WM_KEYUP:
+    case WM_SYSKEYUP: {
+      WinKeyEventArgs args{static_cast<Key>(wParam)};
+      v->keyUpEvent(&args);
+      break;
+    }
+    case WM_TIMER: {
+      break;
+    }
     default:
       return DefWindowProc(hWnd, message, wParam, lParam);
   }
@@ -173,22 +177,15 @@ LRESULT NativeWindowManager::WndProc(HWND hWnd, UINT message, WPARAM wParam,
 
 const TCHAR NativeWindowImpl::DEFAULT_WINDOW_TITLE[] = TEXT("Test");
 
-NativeWindowImpl::NativeWindowImpl()
-  : NativeWindowImpl(std::make_shared<View>()) { }
-
-NativeWindowImpl::NativeWindowImpl(const std::shared_ptr<View>& view)
-  : view_(view) {
-  hWnd_ = ::CreateWindow(NativeWindowManager::WINDOW_CLASS_NAME,
-    DEFAULT_WINDOW_TITLE, WS_OVERLAPPEDWINDOW,
-    CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr,
-    NativeApp::getInstance(), nullptr);
+NativeWindowImpl::NativeWindowImpl(Window* window, std::shared_ptr<View> view) :
+  hWnd_(::CreateWindow(NativeWindowManager::WINDOW_CLASS_NAME,
+          DEFAULT_WINDOW_TITLE, WS_OVERLAPPEDWINDOW,
+          CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr,
+          NativeApp::getInstance(), nullptr)),
+  window_(window),
+  view_(std::move(view)),
+  context_(DirectXRes::createContextFromHWnd(hWnd_)) {
   SetWindowLong(hWnd_, GWL_USERDATA, reinterpret_cast<LONG>(this));
-
-  context_ = DirectXRes::createContextFromHWnd(hWnd_);
-}
-
-void NativeWindowImpl::setView(const std::shared_ptr<View>& view) {
-  view_ = view;
 }
 
 WindowState NativeWindowImpl::getWindowState() {
@@ -236,6 +233,18 @@ void NativeWindowImpl::setWindowState(WindowState state) {
   }
 }
 
+void NativeWindowImpl::setView(std::shared_ptr<View> view) {
+  if (view) {
+    view_ = std::move(view);
+  } else {
+    view_ = std::make_shared<View>();
+  }
+}
+
+std::shared_ptr<View> NativeWindowImpl::getView() const {
+  return view_;
+}
+
 void NativeWindowImpl::setTitle(const String& title) {
   ::SetWindowText(hWnd_, title.c_str());
 }
@@ -252,4 +261,5 @@ void NativeWindowImpl::setBounds(const Rect& bounds) {
   MoveWindow(hWnd_, bounds.left(), bounds.top(), bounds.width(),
              bounds.height(), FALSE);
 }
+
 } // namespace yuki

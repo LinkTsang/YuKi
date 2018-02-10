@@ -2,8 +2,8 @@
 
 namespace yuki {
 void UIElement::onRender(Context2D* context) {
-  context->begin();
   context->clear(Color::WhiteSmoke);
-  context->end();
 }
+
+void UIElement::onRenderTargetChanged(Context2D* context) {}
 }

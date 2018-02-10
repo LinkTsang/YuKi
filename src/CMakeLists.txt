@@ -6,6 +6,7 @@ set(YUKI_SOURCE_LIST
   "core/typedef.h"
   "core/app.cpp"
   "core/app.h"
+  "core/event.h"
   "core/logger.cpp"
   "core/logger.h"
   "core/object.cpp"
@@ -27,6 +28,8 @@ set(YUKI_SOURCE_LIST
 
   "ui/uielement.cpp"
   "ui/uielement.h"
+  "ui/userinput.h"
+  "ui/userinput.cpp"
   "ui/view.cpp"
   "ui/view.h"
   "ui/weight.cpp"
@@ -34,12 +37,14 @@ set(YUKI_SOURCE_LIST
   "ui/window.cpp"
   "ui/window.h"
 
-  "platforms/windows/nativeapp.cpp"
-  "platforms/windows/nativeapp.h"
-  "platforms/windows/window.cpp"
-  "platforms/windows/window.h"
   "platforms/windows/direct2d.cpp"
   "platforms/windows/direct2d.h"
+  "platforms/windows/nativeapp.cpp"
+  "platforms/windows/nativeapp.h"
+  "platforms/windows/userinput.h"
+  "platforms/windows/userinput.cpp"
+  "platforms/windows/window.cpp"
+  "platforms/windows/window.h"
 )
 
 add_library(yuki

@@ -13,7 +13,9 @@ public:
   virtual ~UIElement() = default;
 
 protected:
+  virtual void onRenderTargetChanged(Context2D* context);
   virtual void onRender(Context2D* context);
   friend class NativeWindowManager;
+  friend class Window;
 };
 } // namespace yuki

@@ -18,9 +18,7 @@ public:
 
 class NativeWindowImpl : public INativeWindow {
 public:
-  NativeWindowImpl();
-  explicit NativeWindowImpl(const std::shared_ptr<View>& view);
-  void setView(const std::shared_ptr<View>& view) override;
+  explicit NativeWindowImpl(Window* window, std::shared_ptr<View> view);
 
   WindowState getWindowState() override;
   void setWindowState(WindowState state) override;
@@ -31,10 +29,13 @@ public:
   Rect getBounds() const override;
   void setBounds(const Rect& bounds) override;
 
+  void setView(std::shared_ptr<View> view) override;
+  std::shared_ptr<View> getView() const override;
 private:
   static const TCHAR DEFAULT_WINDOW_TITLE[];
   friend class NativeWindowManager;
   HWND hWnd_;
+  Window* const window_;
   std::shared_ptr<View> view_;
   std::unique_ptr<D2DContext2D> context_;
 };
