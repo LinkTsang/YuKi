@@ -37,6 +37,11 @@ protected:
   Logger(Logger&&) = default;
 };
 
+inline Logger& operator<<(Logger& logger, const Char c) {
+  Logger::write(String(1, c));
+  return logger;
+}
+
 inline Logger& operator<<(Logger& logger, const Char* message) {
   Logger::write(message);
   return logger;
