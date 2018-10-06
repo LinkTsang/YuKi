@@ -12,10 +12,12 @@
 namespace yuki {
 class D2DContext2D;
 
+/**
+ * \brief DirectX Resource Manager class
+ */
 class DirectXRes {
 public:
   DirectXRes() = delete;
-  ~DirectXRes() = delete;
 
   static void init();
   static void releaseAll();
@@ -50,12 +52,26 @@ private:
     D3D_DRIVER_TYPE type, Microsoft::WRL::ComPtr<ID3D11Device>& device);
 };
 
+
+/**
+ * \brief Direct2D Brush Allocation class
+ */
+class D2DBrushAllocation {
+public:
+  Microsoft::WRL::ComPtr<ID2D1Brush> getD2DBrush(ID2D1DeviceContext* d2dContext,
+                                                 const Brush* brush);
+};
+
+
+/**
+ * \brief Direct2D Context class
+ */
 class D2DContext2D : public Context2D {
 public:
+  explicit D2DContext2D(HWND hWnd);
+
   void resetSize(SizeF size) override;
 
-  explicit D2DContext2D(HWND hWnd);
-  ~D2DContext2D();
   void begin() override;
   bool flush() override;
   bool end() override;
@@ -95,7 +111,6 @@ public:
   void drawText(const String& text, const TextFormat* font, const RectF& rect,
                 const Brush* brush) override;
 
-  std::unique_ptr<Brush> createSolidBrush(const ColorF& color) override;
   std::unique_ptr<TextFormat> createTextFormat(const String& name, float size,
                                                FontWeight weight) override;
 
@@ -105,6 +120,7 @@ private:
   Microsoft::WRL::ComPtr<ID2D1DeviceContext> context_;
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swapChain_;
   Microsoft::WRL::ComPtr<ID2D1Bitmap1> bitmap_;
+  std::unique_ptr<D2DBrushAllocation> brushAllocation_;
 
   void createDeviceContextFromHWnd(HWND hWnd);
   void createDeviceSwapChainBitmap();
@@ -113,7 +129,8 @@ private:
   void beginDraw();
   bool endDraw();
 
-private:
   friend class NativeWindowManager;
 };
+
+
 } // namespace yuki

@@ -38,10 +38,10 @@ using ClosedEvent = Event<ClosedEventHandler>;
 
 class SizeChangedEventArgs : public GuiEventArgs {
 public:
-  explicit SizeChangedEventArgs(const Size size) : size_(size) {}
-  Size getSize() const { return size_; }
+  explicit SizeChangedEventArgs(const SizeF size) : size_(size) {}
+  SizeF getSize() const { return size_; }
 private:
-  Size size_;
+  SizeF size_;
 };
 
 using SizeChangedEventHandler = EventHandler<Object*, SizeChangedEventArgs*>;
@@ -535,14 +535,12 @@ using KeyEventHandler = EventHandler<Object*, KeyEventArgs*>;
 using KeyEvent = Event<KeyEventHandler>;
 
 class KeyCharEventArgs : public EventArgs {
-public:
-  explicit KeyCharEventArgs(const Char c) : char_(c) { }
+ public:
+  explicit KeyCharEventArgs(const Char c) : char_(c) {}
 
-  Char getChar() const {
-    return char_;
-  }
+  Char getChar() const { return char_; }
 
-private:
+ private:
   Char char_;
 };
 }

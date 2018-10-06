@@ -1,6 +1,7 @@
 #pragma once
 #include "uielement.h"
 #include "ui/userinput.h"
+#include <vector>
 
 namespace yuki {
 class View : public UIElement {
@@ -12,7 +13,11 @@ public:
   View& operator=(View&&) = default;
   virtual ~View() = default;
 
+  const UIContainer& children() const;
+  UIContainer& children();
 protected:
+  void onRenderTargetChanged(Context2D* context) override;
+  void onRender(Context2D* context) override;
   virtual void sizeChangedEvent(SizeChangedEventArgs* args);
   virtual void sizeChangingEvent(SizeChangingEventArgs* args);
   virtual void mouseButtonUpEvent(MouseEventArgs* args);
@@ -24,5 +29,8 @@ protected:
   virtual void keyCharEvent(KeyCharEventArgs* args);
   virtual void keyUpEvent(KeyEventArgs* args);
   friend class NativeWindowManager;
+
+private:
+  UIContainer children_;
 };
 } // namespace yuki

@@ -1,5 +1,5 @@
 #include "window.h"
-#include <Windows.h>
+
 #include <Windowsx.h>
 #include "platforms/windows/direct2d.h"
 #include "platforms/windows/nativeapp.h"
@@ -132,7 +132,7 @@ LRESULT NativeWindowManager::WndProc(HWND hWnd, UINT message, WPARAM wParam,
       auto context = nativeWindow->context_.get();
       context->resetSize(sizeF);
       v->onRenderTargetChanged(context);
-      SizeChangedEventArgs args{size};
+      SizeChangedEventArgs args{sizeF};
       v->sizeChangedEvent(&args);
       break;
     }

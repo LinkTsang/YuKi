@@ -77,7 +77,6 @@ public:
   virtual void setDpi(float dpiX, float dpiY) = 0;
   virtual void getDpi(float* dpiX, float* dpiY) = 0;
 
-  virtual std::unique_ptr<Brush> createSolidBrush(const ColorF& color) = 0;
   virtual std::unique_ptr<TextFormat> createTextFormat(
     const String& name, float size,
     FontWeight weight = FontWeight::Normal) = 0;

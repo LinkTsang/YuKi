@@ -1,10 +1,14 @@
 #pragma once
 
-#include <Windows.h>
 #include <memory>
 #include "core/string.hpp"
 #include "ui/view.h"
 #include "ui/window.h"
+
+#ifdef TEXT
+#undef TEXT
+#endif
+#include <Windows.h>
 
 namespace yuki {
 class D2DContext2D;

@@ -4,6 +4,7 @@
 #include <cassert>
 #include <exception>
 #include <utility>
+#include <string_view>
 
 #undef max
 #undef min
@@ -59,32 +60,18 @@ public:
 class D2DBrush : public D2DDeviceDependentRes {
 public:
   D2DBrush() = default;
-  D2DBrush(const D2DBrush&) = default;
-  D2DBrush(D2DBrush&&) = default;
-  D2DBrush& operator=(const D2DBrush&) = default;
-  D2DBrush& operator=(D2DBrush&&) = default;
-  virtual ~D2DBrush() = default;
-
   virtual ComPtr<ID2D1Brush> getD2DBrush() const = 0;
 };
 
 /*******************************************************************************
  * class D2DSoildColorBrush
  ******************************************************************************/
-class D2DSolidColorBrush : public SolidColorBrush, public D2DBrush {
+class D2DSolidColorBrush : public D2DBrush {
 public:
-  D2DSolidColorBrush() = default;
-  D2DSolidColorBrush(const D2DSolidColorBrush&) = default;
-  D2DSolidColorBrush(D2DSolidColorBrush&&) = default;
-  D2DSolidColorBrush& operator=(const D2DSolidColorBrush&) = default;
-  D2DSolidColorBrush& operator=(D2DSolidColorBrush&&) = default;
+  explicit D2DSolidColorBrush(ComPtr<ID2D1SolidColorBrush> brush) :
+    brush_(std::move(brush)) {}
 
-  explicit D2DSolidColorBrush(ComPtr<ID2D1SolidColorBrush> brush)
-    : brush_(std::move(brush)) { }
-
-  virtual ~D2DSolidColorBrush() = default;
   ComPtr<ID2D1Brush> getD2DBrush() const override { return brush_; }
-
 private:
   ComPtr<ID2D1SolidColorBrush> brush_;
 };
@@ -247,11 +234,11 @@ public:
   ComPtr<IDWriteTextFormat> getTextFormat() const { return textFormat_; }
 
   String getFontFamilyName() const override {
-    String buffer;
     auto length = textFormat_->GetFontFamilyNameLength();
-    buffer.reserve(length);
-    WarnIfFailed(textFormat_->GetFontFamilyName(&buffer[0], length));
-    return buffer;
+    auto buffer = std::make_unique<WCHAR[]>(length);
+    WarnIfFailed(textFormat_->GetFontFamilyName(buffer.get(), length));
+    std::wstring_view wstringView(buffer.get(), length);
+    return String(wstringView.begin(), wstringView.end());
   }
 
   float getSize() const override { return textFormat_->GetFontSize(); }
@@ -335,11 +322,6 @@ static constexpr D2D1_ELLIPSE ToD2DEllipse(const CircleF& circle) {
 
 static constexpr D2D1_COLOR_F ToD2DColorF(const ColorF& color) noexcept {
   return D2D1_COLOR_F{color.red(), color.green(), color.blue(), color.alpha()};
-}
-
-static ComPtr<ID2D1Brush> ToD2DBrush(const Brush* brush) noexcept {
-  const auto b = dynamic_cast<const D2DBrush*>(brush);
-  return b->getD2DBrush();
 }
 
 static ComPtr<ID2D1StrokeStyle> ToD2DStrokeStyle(
@@ -460,9 +442,34 @@ inline HRESULT DirectXRes::createD3D11Device(D3D_DRIVER_TYPE const type,
                            nullptr);
 }
 
+
+
+/*******************************************************************************
+* class D2DBrushAllocation
+******************************************************************************/
+
+ComPtr<ID2D1Brush> D2DBrushAllocation::getD2DBrush(ID2D1DeviceContext* d2dContext,
+  const Brush* brush) {
+  if (brush == nullptr) {
+    return nullptr;
+  }
+  switch (brush->style()) {
+    case BrushStyle::SolidColor: {
+      const auto solidColorBrush = static_cast<const SolidColorBrush*>(brush);
+      ComPtr<ID2D1SolidColorBrush> d2dBrush;
+      ThrowIfFailed(d2dContext->CreateSolidColorBrush(ToD2DColorF(solidColorBrush->getColor()),
+                                                    &d2dBrush));
+      return d2dBrush;
+    }
+    default:
+      return nullptr;
+  }
+}
+
 /*******************************************************************************
  * class D2DContext
  ******************************************************************************/
+
 void D2DContext2D::resetSize(SizeF size) {
   using namespace Microsoft::WRL;
   const int DOUBLE_BUFFER_COUNT = 2;
@@ -487,8 +494,6 @@ D2DContext2D::D2DContext2D(HWND hWnd) {
   createDeviceContextFromHWnd(hWnd);
   createDeviceSwapChainBitmap();
 }
-
-D2DContext2D::~D2DContext2D() = default;
 
 inline void D2DContext2D::begin() { }
 
@@ -515,53 +520,62 @@ void D2DContext2D::clear(const ColorF& color) {
 
 void D2DContext2D::drawCircle(const CircleF& circle, const Brush* brush,
                               float strokeWidth, StrokeStyle* strokeStyle) {
-  context_->DrawEllipse(ToD2DEllipse(circle), ToD2DBrush(brush).Get(),
+  auto d2dBrush = brushAllocation_->getD2DBrush(context_.Get(), brush);
+  context_->DrawEllipse(ToD2DEllipse(circle), d2dBrush.Get(),
                         strokeWidth, ToD2DStrokeStyle(strokeStyle).Get());
 }
 
 void D2DContext2D::drawEllipse(const EllipseF& ellipse, const Brush* brush,
                                float strokeWidth, StrokeStyle* strokeStyle) {
-  context_->DrawEllipse(ToD2DEllipse(ellipse), ToD2DBrush(brush).Get(),
+  auto d2dBrush = brushAllocation_->getD2DBrush(context_.Get(), brush);
+  context_->DrawEllipse(ToD2DEllipse(ellipse), d2dBrush.Get(),
                         strokeWidth, ToD2DStrokeStyle(strokeStyle).Get());
 }
 
 void D2DContext2D::drawLine(const LineF& line, const Brush* brush,
                             float strokeWidth, StrokeStyle* strokeStyle) {
+  auto d2dBrush = brushAllocation_->getD2DBrush(context_.Get(), brush);
   context_->DrawLine(ToD2DPointF(line.p1()), ToD2DPointF(line.p2()),
-                     ToD2DBrush(brush).Get(), strokeWidth,
+                     d2dBrush.Get(), strokeWidth,
                      ToD2DStrokeStyle(strokeStyle).Get());
 }
 
 void D2DContext2D::drawRect(const RectF& rect, const Brush* brush,
                             float strokeWidth, StrokeStyle* strokeStyle) {
-  context_->DrawRectangle(ToD2DRectF(rect), ToD2DBrush(brush).Get(),
+  auto d2dBrush = brushAllocation_->getD2DBrush(context_.Get(), brush);
+  context_->DrawRectangle(ToD2DRectF(rect), d2dBrush.Get(),
                           strokeWidth, ToD2DStrokeStyle(strokeStyle).Get());
 }
 
 void D2DContext2D::drawRoundedRect(const RoundedRectF& rect, const Brush* brush,
                                    float strokeWidth,
                                    StrokeStyle* strokeStyle) {
+  auto d2dBrush = brushAllocation_->getD2DBrush(context_.Get(), brush);
   context_->DrawRoundedRectangle(ToD2DRoundedRectF(rect),
-                                 ToD2DBrush(brush).Get(), strokeWidth,
+                                 d2dBrush.Get(), strokeWidth,
                                  ToD2DStrokeStyle(strokeStyle).Get());
 }
 
 void D2DContext2D::fillCircle(const CircleF& circle, const Brush* brush) {
-  context_->FillEllipse(ToD2DEllipse(circle), ToD2DBrush(brush).Get());
+  auto d2dBrush = brushAllocation_->getD2DBrush(context_.Get(), brush);
+  context_->FillEllipse(ToD2DEllipse(circle), d2dBrush.Get());
 }
 
 void D2DContext2D::fillEllipse(const EllipseF& ellipse, const Brush* brush) {
-  context_->FillEllipse(ToD2DEllipse(ellipse), ToD2DBrush(brush).Get());
+  auto d2dBrush = brushAllocation_->getD2DBrush(context_.Get(), brush);
+  context_->FillEllipse(ToD2DEllipse(ellipse), d2dBrush.Get());
 }
 
 void D2DContext2D::fillRect(const RectF& rect, const Brush* brush) {
-  context_->FillRectangle(ToD2DRectF(rect), ToD2DBrush(brush).Get());
+  auto d2dBrush = brushAllocation_->getD2DBrush(context_.Get(), brush);
+  context_->FillRectangle(ToD2DRectF(rect), d2dBrush.Get());
 }
 
 void D2DContext2D::fillRoundedRect(const RoundedRectF& rect,
                                    const Brush* brush) {
+  auto d2dBrush = brushAllocation_->getD2DBrush(context_.Get(), brush);
   context_->FillRoundedRectangle(ToD2DRoundedRectF(rect),
-                                 ToD2DBrush(brush).Get());
+                                 d2dBrush.Get());
 }
 
 void D2DContext2D::pushClip(const RectF& rect) {
@@ -611,14 +625,9 @@ void D2DContext2D::drawBitmap(const Bitmap* bitmap,
 
 void D2DContext2D::drawText(const String& text, const TextFormat* font,
                             const RectF& rect, const Brush* brush) {
+  auto d2dBrush = brushAllocation_->getD2DBrush(context_.Get(), brush);
   context_->DrawTextW(text.c_str(), text.size(), ToWriteTextFormat(font).Get(),
-                      ToD2DRectF(rect), ToD2DBrush(brush).Get());
-}
-
-std::unique_ptr<Brush> D2DContext2D::createSolidBrush(const ColorF& color) {
-  ComPtr<ID2D1SolidColorBrush> brush;
-  ThrowIfFailed(context_->CreateSolidColorBrush(ToD2DColorF(color), &brush));
-  return std::make_unique<D2DSolidColorBrush>(std::move(brush));
+      ToD2DRectF(rect), d2dBrush.Get());
 }
 
 std::unique_ptr<Bitmap> D2DContext2D::loadBitmap(const String& filename) {
@@ -626,7 +635,8 @@ std::unique_ptr<Bitmap> D2DContext2D::loadBitmap(const String& filename) {
 
   ComPtr<IWICBitmapDecoder> decoder;
   ThrowIfFailed(factory->CreateDecoderFromFilename(
-                                                   filename.c_str(), nullptr,
+                                                   filename.c_str(),
+                                                   nullptr,
                                                    GENERIC_READ,
                                                    WICDecodeMetadataCacheOnLoad,
                                                    &decoder));

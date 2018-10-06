@@ -18,7 +18,7 @@ public:
   virtual ~Win32LoggerListener() = default;
 
   void write(const String& message) override {
-    ::OutputDebugString(message.c_str());
+    ::OutputDebugString(std::wstring(message.cbegin(), message.cend()).c_str());
   }
 };
 

@@ -1,17 +1,15 @@
 #pragma once
 
-#ifdef TEXT
-#undef  TEXT
-#endif
-
 #ifdef UNICODE
+#ifndef TEXT
 #define TEXT(quote) L##quote
+#endif
 namespace yuki {
 typedef wchar_t Char;
-} // namespace yuki
+}  // namespace yuki
 #else  // !UNICODE
 #define TEXT(quote) quote
 namespace yuki {
 typedef char Char;
-} // namespace yuki
+}  // namespace yuki
 #endif

@@ -8,10 +8,15 @@
 using namespace yuki;
 
 class MyView : public View {
+public:
+  MyView() : brush_(new SolidColorBrush(Color::Violet)) {
+    const auto rectangle = new Rectangle({100, 100, 200, 200});
+    rectangle->setFill(new SolidColorBrush(Color::DarkViolet));
+    children().add(rectangle);
+  }
 protected:
   void onRenderTargetChanged(Context2D* context) override {
     View::onRenderTargetChanged(context);
-    brush_ = context->createSolidBrush(Color::Violet);
     font_ = context->createTextFormat(TEXT("Verdana"), 72.0f);
   }
 
