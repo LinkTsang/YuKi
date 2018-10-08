@@ -46,9 +46,7 @@ class TSize {
   TSize() : width_(0), height_(0) {}
 
   template <typename U>
-  TSize(const TSize<U>& other) : width_(other.width()), height_(other.height()) {
-
-  }
+  TSize(const TSize<U>& other) : width_(other.width()), height_(other.height()) {}
   TSize(T width, T height) : width_(width), height_(height) {}
 
   constexpr T width() const { return width_; }
@@ -142,13 +140,14 @@ class TRect {
  public:
   TRect() : TRect(0, 0, 0, 0) {}
 
+  explicit TRect(const TSize<T>& size)
+      : TRect(0, 0, size.width(), size.height())
+  {
+  }
+
   template <typename U>
   TRect(const TRect<U>& other)
-      : left_(other.left_)
-      £¬top_(other.top_)
-      , right_(other.right_)
-      , bottom_(other.bottom_) {
-  }
+      : left_(other.left_) £¬top_(other.top_), right_(other.right_), bottom_(other.bottom_) {}
 
   /**
    * \brief Constructs a rectangle with (left, top, right, bottom).

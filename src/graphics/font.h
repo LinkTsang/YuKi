@@ -183,7 +183,7 @@ enum class FontWeight {
 };
 
 class TextFormat : public Object {
-public:
+ public:
   TextFormat() = default;
   TextFormat(const TextFormat&) = default;
   TextFormat(TextFormat&&) = default;
@@ -200,4 +200,20 @@ public:
   virtual void setWordWrapping(WordWrapping wordWrapping) = 0;
   virtual WordWrapping getWordWrapping() const = 0;
 };
-} // namespace yuki
+
+class Font {
+ public:
+  void setFamilyName(const String& family) { familyName_ = family; }
+  const String& familyName() const { return familyName_; }
+
+  void setSize(float size) { size_ = size; }
+
+  float size() const {
+    return size_;
+  }
+
+ private:
+  String familyName_;
+  float size_;
+};
+}  // namespace yuki

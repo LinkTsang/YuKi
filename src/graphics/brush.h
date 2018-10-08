@@ -17,9 +17,11 @@ public:
   Brush& operator=(const Brush&) = default;
   Brush& operator=(Brush&&) = default;
   virtual ~Brush() = 0;
+  virtual Brush* clone() const = 0;
+
   BrushStyle style() const { return style_; }
 
-protected:
+ protected:
   explicit Brush(const BrushStyle type) : style_(type) {}
   BrushStyle style_;
 };
@@ -30,6 +32,8 @@ public:
     Brush(BrushStyle::SolidColor),
     color_(color) {}
   ~SolidColorBrush() {};
+  SolidColorBrush* clone() const override{ return new SolidColorBrush(color_); }
+
   ColorF getColor() const { return color_; }
   void setColor(const ColorF& color) { color_ = color; }
 private:
