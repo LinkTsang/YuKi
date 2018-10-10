@@ -1,5 +1,7 @@
 #include "painter.h"
 
 namespace yuki {
+namespace graphic {
 StrokeStyle::~StrokeStyle() = default;
-} // namespace yuki
+}  // namespace graphic
+}  // namespace yuki

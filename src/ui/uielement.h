@@ -4,6 +4,8 @@
 #include "graphics/painter.h"
 
 namespace yuki {
+namespace ui {
+using namespace graphic;
 class Style : public Object {
  public:
   const Brush& foreground() const { return *foreground_.get(); }
@@ -62,7 +64,8 @@ class UIContainer : public Object {
   UIContainer& add(std::initializer_list<UIElement*> elements);
   UIContainer& remove(const UIElement* element);
 
-  class const_iterator : public std::iterator<std::input_iterator_tag, UIElement*> {
+  class const_iterator
+      : public std::iterator<std::input_iterator_tag, UIElement*> {
    public:
     explicit const_iterator(const Iterator& iterator) : iterator_(iterator) {}
 
@@ -77,9 +80,13 @@ class UIContainer : public Object {
       return retval;
     }
 
-    bool operator==(const const_iterator other) const { return iterator_ == other.iterator_; }
+    bool operator==(const const_iterator other) const {
+      return iterator_ == other.iterator_;
+    }
 
-    bool operator!=(const const_iterator other) const { return !(*this == other); }
+    bool operator!=(const const_iterator other) const {
+      return !(*this == other);
+    }
 
     value_type operator*() const { return iterator_->get(); }
 
@@ -112,7 +119,8 @@ class Shape : public UIElement {
 
 class Rectangle : public Shape {
  public:
-  Rectangle(float left, float top, float right, float bottom) : bounds_(left, top, right, bottom) {}
+  Rectangle(float left, float top, float right, float bottom)
+      : bounds_(left, top, right, bottom) {}
 
   void setHeight(const float value) { bounds_.setHeight(value); }
   void setWidth(const float value) { bounds_.setWidth(value); }
@@ -126,4 +134,5 @@ class Rectangle : public Shape {
  private:
   RectF bounds_;
 };
+}  // namespace ui
 }  // namespace yuki

@@ -2,6 +2,8 @@
 #include <Windows.h>
 
 namespace yuki {
+namespace platforms {
+namespace windows {
 WinKeyEventArgs::WinKeyEventArgs(const Key key) : KeyEventArgs(key) {}
 
 bool WinKeyEventArgs::isAltPressed() const {
@@ -19,4 +21,6 @@ bool WinKeyEventArgs::isShiftPressed() const {
 bool WinKeyEventArgs::isKeyPressed(Key key) const {
   return GetKeyState(static_cast<int>(key)) & 0x8000;
 }
-}
+}  // namespace windows
+}  // namespace platforms
+}  // namespace yuki

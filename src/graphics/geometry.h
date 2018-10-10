@@ -1,6 +1,7 @@
 #pragma once
 
 namespace yuki {
+namespace graphic {
 class Matrix3x2F {
  public:
   Matrix3x2F() : Matrix3x2F(0, 0, 0, 0, 0, 0) {}
@@ -33,7 +34,9 @@ class Transform2D : public Matrix3x2F {
 
   static Transform2D identity() { return {1, 0, 0, 1, 0, 0}; }
 
-  static Transform2D translation(float dx, float dy) { return {1, 0, 0, 1, dx, dy}; }
+  static Transform2D translation(float dx, float dy) {
+    return {1, 0, 0, 1, dx, dy};
+  }
 
   static Transform2D rotation(float theta);
   static Transform2D rotation(float x, float y, float theta);
@@ -46,7 +49,8 @@ class TSize {
   TSize() : width_(0), height_(0) {}
 
   template <typename U>
-  TSize(const TSize<U>& other) : width_(other.width()), height_(other.height()) {}
+  TSize(const TSize<U>& other)
+      : width_(other.width()), height_(other.height()) {}
   TSize(T width, T height) : width_(width), height_(height) {}
 
   constexpr T width() const { return width_; }
@@ -141,13 +145,13 @@ class TRect {
   TRect() : TRect(0, 0, 0, 0) {}
 
   explicit TRect(const TSize<T>& size)
-      : TRect(0, 0, size.width(), size.height())
-  {
-  }
+      : TRect(0, 0, size.width(), size.height()) {}
 
   template <typename U>
   TRect(const TRect<U>& other)
-      : left_(other.left_) £¬top_(other.top_), right_(other.right_), bottom_(other.bottom_) {}
+      : left_(other.left_) £¬top_(other.top_),
+        right_(other.right_),
+        bottom_(other.bottom_) {}
 
   /**
    * \brief Constructs a rectangle with (left, top, right, bottom).
@@ -167,8 +171,8 @@ class TRect {
   }
 
   /**
-   * \brief Returns a new rectangle with dx1, dy1, dx2 and dy2 added respectively
-   *        to the existing coordinates of this rectangle.
+   * \brief Returns a new rectangle with dx1, dy1, dx2 and dy2 added
+   * respectively to the existing coordinates of this rectangle.
    */
   constexpr TRect adjusted(T dx1, T dy1, T dx2, T dy2) const {
     return {left_ + dx1, top_ + dy1, right_ + dx2, bottom_ + dy2};
@@ -201,13 +205,17 @@ class TRect {
     bottom_ += dy;
   }
 
-  void translate(const TPoint<T>& offset) noexcept { translate(offset.x(), offset.y()); }
+  void translate(const TPoint<T>& offset) noexcept {
+    translate(offset.x(), offset.y());
+  }
 
   TRect translated(T dx, T dy) noexcept {
     return {left_ + dx, top_ + dy, right_ + dx, bottom_ + dy};
   }
 
-  TRect translated(const TPoint<T>& offset) noexcept { return translated(offset.x(), offset.y()); }
+  TRect translated(const TPoint<T>& offset) noexcept {
+    return translated(offset.x(), offset.y());
+  }
 
  private:
   T left_;
@@ -226,7 +234,9 @@ class TRoundedRect : public TRect<T> {
       : TRect<T>(rect), radiusX_(radiusX), radiusY_(radiusY) {}
 
   constexpr TRoundedRect(T left, T top, T right, T bottom, T radiusX, T radiusY)
-      : TRect<T>(left, top, right, bottom), radiusX_(radiusX), radiusY_(radiusY) {}
+      : TRect<T>(left, top, right, bottom),
+        radiusX_(radiusX),
+        radiusY_(radiusY) {}
 
   constexpr T radiusX() const { return radiusX_; }
   constexpr T radiusY() const { return radiusY_; }
@@ -244,7 +254,8 @@ using RoundedRectF = TRoundedRect<float>;
 template <typename T>
 class TEllipse {
  public:
-  TEllipse(T x, T y, T radiusX, T radiusY) : center_(x, y), radiusX_(radiusX), radiusY_(radiusY) {}
+  TEllipse(T x, T y, T radiusX, T radiusY)
+      : center_(x, y), radiusX_(radiusX), radiusY_(radiusY) {}
 
   TEllipse(const TPoint<T>& center, T radiusX, T radiusY)
       : center_(center), radiusX_(radiusX), radiusY_(radiusY) {}
@@ -271,7 +282,8 @@ class TCircle {
  public:
   TCircle(T x, T y, T radius) : center_(x, y), radius_(radius) {}
 
-  TCircle(const TPoint<T>& center, T radius) : center_(center), radius_(radius) {}
+  TCircle(const TPoint<T>& center, T radius)
+      : center_(center), radius_(radius) {}
 
   constexpr const TPoint<T>& center() const { return center_; }
   constexpr T x() const { return center_.x(); }
@@ -287,4 +299,5 @@ class TCircle {
 
 using Circle = TCircle<int>;
 using CircleF = TCircle<float>;
+}  // namespace graphic
 }  // namespace yuki

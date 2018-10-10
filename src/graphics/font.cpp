@@ -1,3 +1,6 @@
 #include "font.h"
 
-namespace yuki {} // namespace yuki
+namespace yuki {
+namespace graphic {}
+
+}  // namespace yuki

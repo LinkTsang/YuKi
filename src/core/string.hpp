@@ -15,10 +15,10 @@ String ToString(T&& value) {
 using Char = char;
 using String = std::string;
 
-template<typename T>
+template <typename T>
 String ToString(T&& value) {
   return std::to_string(std::forward<T>(value));
 }
 #endif
 
-} // namespace yuki
+}  // namespace yuki

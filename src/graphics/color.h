@@ -1,6 +1,8 @@
 #pragma once
 #include <cstdint>
 
+namespace yuki {
+namespace graphic {
 struct Color {
   uint8_t alpha;
   uint8_t red;
@@ -152,23 +154,19 @@ struct Color {
 };
 
 class ColorF {
-public:
+ public:
   ColorF(Color::Enum knownColor, float a = 1.0f)
-    : ColorF(static_cast<uint32_t>(knownColor), a) { }
+      : ColorF(static_cast<uint32_t>(knownColor), a) {}
 
   ColorF(float r, float g, float b, float a = 1.0f)
-    : alpha_(a),
-      red_(r),
-      green_(g),
-      blue_(b) { }
+      : alpha_(a), red_(r), green_(g), blue_(b) {}
 
   ColorF(uint32_t rgb, float alpha)
-    : ColorF(
-             static_cast<float>((rgb & SC_RED_MASK) >> SC_RED_SHIFT) / 255.f,
-             static_cast<float>((rgb & SC_GREEN_MASK) >> SC_GREEN_SHIFT) /
-             255.f,
-             static_cast<float>((rgb & SC_BLUE_MASK) >> SC_BLUE_SHIFT) / 255.f,
-             alpha) { }
+      : ColorF(
+            static_cast<float>((rgb & SC_RED_MASK) >> SC_RED_SHIFT) / 255.f,
+            static_cast<float>((rgb & SC_GREEN_MASK) >> SC_GREEN_SHIFT) / 255.f,
+            static_cast<float>((rgb & SC_BLUE_MASK) >> SC_BLUE_SHIFT) / 255.f,
+            alpha) {}
 
   constexpr float alpha() const { return alpha_; }
   constexpr float red() const { return red_; }
@@ -180,7 +178,7 @@ public:
   constexpr void setGreen(float green) { green_ = green; }
   constexpr void setBlue(float blue) { blue_ = blue; }
 
-private:
+ private:
   float alpha_;
   float red_;
   float green_;
@@ -193,3 +191,5 @@ private:
   static const uint32_t SC_GREEN_MASK = 0xff << SC_GREEN_SHIFT;
   static const uint32_t SC_BLUE_MASK = 0xff << SC_BLUE_SHIFT;
 };
+}  // namespace graphic
+}  // namespace yuki

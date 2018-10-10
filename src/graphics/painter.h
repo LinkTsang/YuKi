@@ -9,8 +9,9 @@
 #include "graphics/geometry.h"
 
 namespace yuki {
+namespace graphic {
 class StrokeStyle : Object {
-public:
+ public:
   StrokeStyle() = default;
   StrokeStyle(const StrokeStyle&) = default;
   StrokeStyle(StrokeStyle&&) = default;
@@ -20,7 +21,7 @@ public:
 };
 
 class Context2D : Object {
-public:
+ public:
   Context2D(const Context2D&) = delete;
   Context2D(Context2D&&) = delete;
   Context2D& operator=(const Context2D&) = delete;
@@ -63,10 +64,10 @@ public:
                                const Brush* brush) = 0;
 
   virtual void drawBitmap(
-    const Bitmap* bitmap, const RectF* destionationRectangle = nullptr,
-    float opacity = 1.0f,
-    BitmapInterpolationMode mode = BitmapInterpolationMode::Linear,
-    const RectF* sourceRectangle = nullptr) = 0;
+      const Bitmap* bitmap, const RectF* destionationRectangle = nullptr,
+      float opacity = 1.0f,
+      BitmapInterpolationMode mode = BitmapInterpolationMode::Linear,
+      const RectF* sourceRectangle = nullptr) = 0;
 
   virtual void drawText(const String& text, const TextFormat* font,
                         const RectF& rect, const Brush* brush) = 0;
@@ -78,11 +79,12 @@ public:
   virtual void getDpi(float* dpiX, float* dpiY) = 0;
 
   virtual std::unique_ptr<TextFormat> createTextFormat(
-    const String& name, float size,
-    FontWeight weight = FontWeight::Normal) = 0;
+      const String& name, float size,
+      FontWeight weight = FontWeight::Normal) = 0;
   virtual std::unique_ptr<Bitmap> loadBitmap(const String& filename) = 0;
 
-protected:
+ protected:
   Context2D() = default;
 };
-} // namespace yuki
+}  // namespace graphic
+}  // namespace yuki

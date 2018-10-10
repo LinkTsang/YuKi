@@ -1,6 +1,7 @@
 #include "ui/view.h"
 
 namespace yuki {
+namespace ui {
 const UIContainer& View::children() const { return children_; }
 UIContainer& View::children() { return children_; }
 
@@ -26,4 +27,5 @@ void View::mouseWheelEvent(MouseEventArgs* args) {}
 void View::keyDownEvent(KeyEventArgs* args) {}
 void View::keyCharEvent(KeyCharEventArgs* args) {}
 void View::keyUpEvent(KeyEventArgs* args) {}
-} // namespace yuki
+}  // namespace ui
+}  // namespace yuki

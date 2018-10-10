@@ -2,7 +2,7 @@
 
 namespace yuki {
 class Object {
-public:
+ public:
   Object() = default;
   Object(const Object&) = default;
   Object(Object&&) = default;
@@ -10,4 +10,4 @@ public:
   Object& operator=(Object&&) = default;
   virtual ~Object() = default;
 };
-} // namespace yuki
+}  // namespace yuki

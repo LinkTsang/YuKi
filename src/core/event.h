@@ -1,17 +1,17 @@
 #pragma once
-#include "core/object.h"
-#include <vector>
 #include <algorithm>
 #include <functional>
+#include <vector>
+#include "core/object.h"
 
 namespace yuki {
 template <typename HandlerType>
 class Event;
 
 template <typename R, typename... Args>
-class Event<R(Args ...)> : public Object {
-public:
-  typedef R (HandlerType)(Args ...);
+class Event<R(Args...)> : public Object {
+ public:
+  typedef R(HandlerType)(Args...);
 
   Event() = default;
 
@@ -25,23 +25,22 @@ public:
                     handlers_.end());
   }
 
-  void fire(Args ... args) {
+  void fire(Args... args) {
     for (const auto& h : handlers_) {
       h(args...);
     }
   }
 
-private:
+ private:
   std::vector<std::function<HandlerType>> handlers_;
 };
 
 class EventArgs : public Object {
-public:
+ public:
   EventArgs() = default;
 };
-
 
 template <typename Sender, typename EventArgs>
 using EventHandler = void(Sender sender, EventArgs args);
 
-}
+}  // namespace yuki

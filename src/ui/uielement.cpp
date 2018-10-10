@@ -2,9 +2,11 @@
 #include <algorithm>
 
 namespace yuki {
+namespace ui {
+using namespace graphic;
 /******************************************************************************
-* class UIElement
-******************************************************************************/
+ * class UIElement
+ ******************************************************************************/
 void UIElement::onRender(Context2D* context) {
   context->clear(Color::WhiteSmoke);
 }
@@ -12,8 +14,8 @@ void UIElement::onRender(Context2D* context) {
 void UIElement::onRenderTargetChanged(Context2D* context) {}
 
 /******************************************************************************
-* class UIContainer
-******************************************************************************/
+ * class UIContainer
+ ******************************************************************************/
 UIContainer& UIContainer::add(UIElement* element) {
   elements_.emplace_back(element);
   return *this;
@@ -23,7 +25,8 @@ UIContainer& UIContainer::remove(const UIElement* element) {
   elements_.erase(std::remove_if(elements_.begin(), elements_.end(),
                                  [element](const auto other) {
                                    return element == other.get();
-                                 }), elements_.end());
+                                 }),
+                  elements_.end());
   return *this;
 }
 
@@ -56,25 +59,18 @@ void UIContainer::onRender(Context2D* context) const {
 
 Shape::Shape() : fillBrush_(std::make_unique<SolidColorBrush>(Color::White)) {}
 
-void Shape::setFill(Brush* brush) {
-  fillBrush_.reset(brush);
-}
+void Shape::setFill(Brush* brush) { fillBrush_.reset(brush); }
 
-const Brush* Shape::getFill() const {
-  return fillBrush_.get();
-}
+const Brush* Shape::getFill() const { return fillBrush_.get(); }
 
-void Shape::setStroke(Brush* brush) {
-  strokeBrush_.reset(brush);
-}
+void Shape::setStroke(Brush* brush) { strokeBrush_.reset(brush); }
 
-const Brush* Shape::getStroke() const {
-  return strokeBrush_.get();
-}
+const Brush* Shape::getStroke() const { return strokeBrush_.get(); }
 
 void Rectangle::onRenderTargetChanged(Context2D* context) {}
 
 void Rectangle::onRender(Context2D* context) {
   context->fillRect(bounds_, fillBrush_.get());
 }
-}
+}  // namespace ui
+}  // namespace yuki

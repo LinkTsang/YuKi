@@ -1,4 +1,4 @@
-#include "window.h"
+#include "window_impl.h"
 
 #include <Windowsx.h>
 #include "platforms/windows/direct2d.h"
@@ -6,12 +6,15 @@
 #include "platforms/windows/userinput.h"
 
 namespace yuki {
+namespace platforms {
+namespace windows {
+using namespace ui;
 /*******************************************************************************
  * class NativeWindowManager
  ******************************************************************************/
 
 const TCHAR NativeWindowManager::WINDOW_CLASS_NAME[] =
-  TEXT("YUKI_WINDOW_CLASS");
+    TEXT("YUKI_WINDOW_CLASS");
 
 void NativeWindowManager::init() {
   WNDCLASSEX wcex;
@@ -23,32 +26,30 @@ void NativeWindowManager::init() {
   wcex.cbClsExtra = 0;
   wcex.cbWndExtra = 0;
   wcex.hInstance = NativeApp::getInstance();
-  wcex.hIcon = nullptr; // LoadIcon(hInstance, MAKEINTRESOURCE(IDI_DEMO));
+  wcex.hIcon = nullptr;  // LoadIcon(hInstance, MAKEINTRESOURCE(IDI_DEMO));
   wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
   wcex.hbrBackground = HBRUSH(COLOR_WINDOW + 1);
-  wcex.lpszMenuName = nullptr; // MAKEINTRESOURCEW(IDC_DEMO);
+  wcex.lpszMenuName = nullptr;  // MAKEINTRESOURCEW(IDC_DEMO);
   wcex.lpszClassName = WINDOW_CLASS_NAME;
   wcex.hIconSm =
-    nullptr; // LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
+      nullptr;  // LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
   RegisterClassEx(&wcex);
 }
 
 LRESULT NativeWindowManager::WndProc(HWND hWnd, UINT message, WPARAM wParam,
                                      LPARAM lParam) {
-  auto* nativeWindow = reinterpret_cast<NativeWindowImpl*>(
-    GetWindowLong(hWnd, GWL_USERDATA));
+  auto* nativeWindow =
+      reinterpret_cast<NativeWindowImpl*>(GetWindowLong(hWnd, GWL_USERDATA));
   if (nativeWindow == nullptr) {
     return DefWindowProc(hWnd, message, wParam, lParam);
   }
   auto* w = nativeWindow->window_;
   auto v = w->getView();
   if (WM_MOUSEFIRST <= message && message <= WM_MOUSELAST) {
-    MouseEventArgs event_args{
-      {GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)},
-      GET_KEYSTATE_WPARAM(wParam),
-      GET_WHEEL_DELTA_WPARAM(wParam)
-    };
+    MouseEventArgs event_args{{GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)},
+                              GET_KEYSTATE_WPARAM(wParam),
+                              GET_WHEEL_DELTA_WPARAM(wParam)};
     switch (message) {
       case WM_MOUSEMOVE:
         v->mouseMoveEvent(&event_args);
@@ -111,8 +112,7 @@ LRESULT NativeWindowManager::WndProc(HWND hWnd, UINT message, WPARAM wParam,
     case WM_MOVING: {
       const auto pRect = reinterpret_cast<LPRECT>(lParam);
       WindowMovingEventArgs args{
-        {pRect->left, pRect->top, pRect->right, pRect->bottom}
-      };
+          {pRect->left, pRect->top, pRect->right, pRect->bottom}};
       w->movingEvent(&args);
       const auto& newRect = args.getRect();
       pRect->left = newRect.left();
@@ -139,9 +139,8 @@ LRESULT NativeWindowManager::WndProc(HWND hWnd, UINT message, WPARAM wParam,
     case WM_SIZING: {
       const auto pRect = reinterpret_cast<LPRECT>(lParam);
       SizeChangingEventArgs args{
-        static_cast<SizeChangingEventArgs::Edge>(wParam),
-        {pRect->left, pRect->top, pRect->right, pRect->bottom}
-      };
+          static_cast<SizeChangingEventArgs::Edge>(wParam),
+          {pRect->left, pRect->top, pRect->right, pRect->bottom}};
       v->sizeChangingEvent(&args);
       auto newRect = args.getRect();
       pRect->left = newRect.left();
@@ -195,14 +194,14 @@ LRESULT NativeWindowManager::WndProc(HWND hWnd, UINT message, WPARAM wParam,
 
 const TCHAR NativeWindowImpl::DEFAULT_WINDOW_TITLE[] = TEXT("Test");
 
-NativeWindowImpl::NativeWindowImpl(Window* window, std::shared_ptr<View> view) :
-  hWnd_(::CreateWindow(NativeWindowManager::WINDOW_CLASS_NAME,
-          DEFAULT_WINDOW_TITLE, WS_OVERLAPPEDWINDOW,
-          CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr,
-          NativeApp::getInstance(), nullptr)),
-  window_(window),
-  view_(std::move(view)),
-  context_(DirectXRes::createContextFromHWnd(hWnd_)) {
+NativeWindowImpl::NativeWindowImpl(Window* window, std::shared_ptr<View> view)
+    : hWnd_(::CreateWindow(NativeWindowManager::WINDOW_CLASS_NAME,
+                           DEFAULT_WINDOW_TITLE, WS_OVERLAPPEDWINDOW,
+                           CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr,
+                           NativeApp::getInstance(), nullptr)),
+      window_(window),
+      view_(std::move(view)),
+      context_(DirectXRes::createContextFromHWnd(hWnd_)) {
   SetWindowLong(hWnd_, GWL_USERDATA, reinterpret_cast<LONG>(this));
 }
 
@@ -259,9 +258,7 @@ void NativeWindowImpl::setView(std::shared_ptr<View> view) {
   }
 }
 
-std::shared_ptr<View> NativeWindowImpl::getView() const {
-  return view_;
-}
+std::shared_ptr<View> NativeWindowImpl::getView() const { return view_; }
 
 void NativeWindowImpl::setTitle(const String& title) {
   ::SetWindowText(hWnd_, title.c_str());
@@ -281,11 +278,10 @@ void NativeWindowImpl::setBounds(const Rect& bounds) {
   const auto dwStyle = ::GetWindowLong(hWnd_, GWL_STYLE);
   const auto dwExStyle = ::GetWindowLong(hWnd_, GWL_EXSTYLE);
   ::AdjustWindowRectEx(&rect, dwStyle, bMenu, dwExStyle);
-  ::MoveWindow(hWnd_, bounds.left(),
-               bounds.top(),
-               rect.right - rect.left,
-               rect.bottom - rect.top,
-               TRUE);
+  ::MoveWindow(hWnd_, bounds.left(), bounds.top(), rect.right - rect.left,
+               rect.bottom - rect.top, TRUE);
 }
 
-} // namespace yuki
+}  // namespace windows
+}  // namespace platforms
+}  // namespace yuki

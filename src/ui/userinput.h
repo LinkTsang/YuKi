@@ -5,16 +5,19 @@
 #include "graphics/geometry.h"
 
 namespace yuki {
+namespace ui {
+using namespace graphic;
 /*******************************************************************************
-* GUI Event
-******************************************************************************/
+ * GUI Event
+ ******************************************************************************/
 class GuiEventArgs : public EventArgs {};
 
 class ActivateEventArgs : public GuiEventArgs {
-public:
+ public:
   explicit ActivateEventArgs(const bool activated) : activated_(activated) {}
   bool isActivated() const { return activated_; }
-private:
+
+ private:
   bool activated_;
 };
 
@@ -22,12 +25,13 @@ using ActivateEventHandler = EventHandler<Object*, ActivateEventArgs*>;
 using ActivateEvent = Event<ActivateEventHandler>;
 
 class ClosingEventArgs : public GuiEventArgs {
-public:
+ public:
   ClosingEventArgs() : closed_(true) {}
   void cancel() { closed_ = false; }
   void close() { closed_ = true; }
   bool isClosed() const { return closed_; }
-private:
+
+ private:
   bool closed_;
 };
 
@@ -37,10 +41,11 @@ using ClosedEventHandler = EventHandler<Object*, EventArgs*>;
 using ClosedEvent = Event<ClosedEventHandler>;
 
 class SizeChangedEventArgs : public GuiEventArgs {
-public:
+ public:
   explicit SizeChangedEventArgs(const SizeF size) : size_(size) {}
   SizeF getSize() const { return size_; }
-private:
+
+ private:
   SizeF size_;
 };
 
@@ -48,7 +53,7 @@ using SizeChangedEventHandler = EventHandler<Object*, SizeChangedEventArgs*>;
 using SizeChangedEvent = Event<SizeChangedEventHandler>;
 
 class SizeChangingEventArgs : public GuiEventArgs {
-public:
+ public:
   enum Edge {
     Left = 1,
     Right = 2,
@@ -60,16 +65,16 @@ public:
     BottomRight = 8,
   };
 
-  explicit SizeChangingEventArgs(const Edge edge, const Rect rect) :
-    edge_(edge),
-    rect_(rect) {}
+  explicit SizeChangingEventArgs(const Edge edge, const Rect rect)
+      : edge_(edge), rect_(rect) {}
 
   const Rect& getRect() const { return rect_; }
   void setRect(const Rect& rect) { rect_ = rect; }
 
   const Edge& getEdge() const { return edge_; }
   void setRect(const Edge& edge) { edge_ = edge; }
-private:
+
+ private:
   Edge edge_;
   Rect rect_;
 };
@@ -80,41 +85,41 @@ using SizeChangingEvent = Event<SizeChangingEventHandler>;
 enum class WindowState { Shown, Hidden, Restore, Maximized, Minimized };
 
 class WindowStateChangedEventArgs : public EventArgs {
-public:
-  explicit
-  WindowStateChangedEventArgs(const WindowState state) : state_(state) { }
+ public:
+  explicit WindowStateChangedEventArgs(const WindowState state)
+      : state_(state) {}
 
   WindowState state() const { return state_; }
-private:
+
+ private:
   WindowState state_;
 };
 
 class WindowMovingEventArgs : public GuiEventArgs {
-public:
+ public:
   explicit WindowMovingEventArgs(const Rect& rect) : rect_(rect) {}
   const Rect& getRect() const { return rect_; }
   void setRect(const Rect& rect) { rect_ = rect; }
-private:
+
+ private:
   Rect rect_;
 };
 
 class WindowMovedEventArgs : public GuiEventArgs {
-public:
-  explicit WindowMovedEventArgs(const Point& position) :
-    position_(position) {}
+ public:
+  explicit WindowMovedEventArgs(const Point& position) : position_(position) {}
 
-  //The x and y coordinates of the upper - left corner of the client area of the window.
-  const Point& getNewPosition() const {
-    return position_;
-  }
+  // The x and y coordinates of the upper - left corner of the client area of
+  // the window.
+  const Point& getNewPosition() const { return position_; }
 
-private:
+ private:
   Point position_;
 };
 
 /*******************************************************************************
-* Mouse Event
-******************************************************************************/
+ * Mouse Event
+ ******************************************************************************/
 enum class MouseKeyStateMask {
   LButton = 0x0001,
   RButton = 0x0002,
@@ -126,11 +131,9 @@ enum class MouseKeyStateMask {
 };
 
 class MouseEventArgs : public EventArgs {
-public:
+ public:
   MouseEventArgs(const Point position, const int mouseKeyState, const int delta)
-    : position_(position),
-      mouseKeyState_(mouseKeyState),
-      delta_(delta) {};
+      : position_(position), mouseKeyState_(mouseKeyState), delta_(delta){};
   const Point& position() const { return position_; }
   int delta() const { return delta_; }
 
@@ -162,7 +165,7 @@ public:
     return mouseKeyState_ & static_cast<int>(MouseKeyStateMask::XButton2);
   }
 
-private:
+ private:
   Point position_;
   int mouseKeyState_;
   int delta_;
@@ -172,10 +175,10 @@ using MouseEventHandler = EventHandler<Object*, MouseEventArgs*>;
 using MouseEvent = Event<MouseEventHandler>;
 
 /*******************************************************************************
-* Key Event
-******************************************************************************/
+ * Key Event
+ ******************************************************************************/
 enum class Key {
-  // Left mouse button  
+  // Left mouse button
   LButton = 0x01,
   // Right mouse button
   RButton = 0x02,
@@ -471,7 +474,9 @@ enum class Key {
   LaunchApp1 = 0xB6,
   // Start Application 2 key
   LaunchApp2 = 0xB7,
-  // Used for miscellaneous characters, it can vary by keyboard. For the US standard keyboard, the ';:' key
+  // Used for miscellaneous characters, it can vary by keyboard. For the US
+  // standard keyboard, the
+  // ';:' key
   Oem1 = 0xBA,
   // For any country/region, the '+' key
   OemPlus = 0xBB,
@@ -481,25 +486,38 @@ enum class Key {
   OemMinus = 0xBD,
   // For any country/region, the '.' key
   OemPeriod = 0xBE,
-  // Used for miscellaneous characters, it can vary by keyboard. For the US standard keyboard, the '/?' key
+  // Used for miscellaneous characters, it can vary by keyboard. For the US
+  // standard keyboard, the
+  // '/?' key
   Oem2 = 0xBF,
-  // Used for miscellaneous characters, it can vary by keyboard. For the US standard keyboard, the '`~' key
+  // Used for miscellaneous characters, it can vary by keyboard. For the US
+  // standard keyboard, the
+  // '`~' key
   Oem3 = 0xC0,
-  // Used for miscellaneous characters, it can vary by keyboard. For the US standard keyboard, the '[{' key
+  // Used for miscellaneous characters, it can vary by keyboard. For the US
+  // standard keyboard, the
+  // '[{' key
   Oem4 = 0xDB,
-  // Used for miscellaneous characters, it can vary by keyboard. For the US standard keyboard, the '\|' key
+  // Used for miscellaneous characters, it can vary by keyboard. For the US
+  // standard keyboard, the
+  // '\|' key
   Oem5 = 0xDC,
-  // Used for miscellaneous characters, it can vary by keyboard. For the US standard keyboard, the ']}' key
+  // Used for miscellaneous characters, it can vary by keyboard. For the US
+  // standard keyboard, the
+  // ']}' key
   Oem6 = 0xDD,
-  // Used for miscellaneous characters, it can vary by keyboard. For the US standard keyboard, the 'single-quote/double-quote' key
+  // Used for miscellaneous characters, it can vary by keyboard. For the US
+  // standard keyboard, the
+  // 'single-quote/double-quote' key
   Oem7 = 0xDE,
   // Used for miscellaneous characters, it can vary by keyboard.
   Oem8 = 0xDF,
-  // Either the angle bracket key or the backslash key on the RT 102-key keyboard
+  // Either the angle bracket key or the backslash key on the RT 102-key
+  // keyboard
   Oem102 = 0xE2,
   // IME PROCESS key
   Processkey = 0xE5,
-  // Used to pass Unicode characters as if they were keystrokes. 
+  // Used to pass Unicode characters as if they were keystrokes.
   Packet = 0xE7,
   // Attn key
   Attn = 0xF6,
@@ -520,14 +538,15 @@ enum class Key {
 };
 
 class KeyEventArgs : public EventArgs {
-public:
+ public:
   explicit KeyEventArgs(Key key);
   Key getKey() const { return key_; }
   virtual bool isAltPressed() const = 0;
   virtual bool isCtrlPressed() const = 0;
   virtual bool isShiftPressed() const = 0;
   virtual bool isKeyPressed(Key key) const = 0;
-private:
+
+ private:
   Key key_;
 };
 
@@ -543,4 +562,5 @@ class KeyCharEventArgs : public EventArgs {
  private:
   Char char_;
 };
-}
+}  // namespace ui
+}  // namespace yuki

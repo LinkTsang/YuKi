@@ -32,8 +32,6 @@ set(YUKI_SOURCE_LIST
   "ui/userinput.cpp"
   "ui/view.cpp"
   "ui/view.h"
-  "ui/weight.cpp"
-  "ui/weight.h"
   "ui/window.cpp"
   "ui/window.h"
 
@@ -43,8 +41,8 @@ set(YUKI_SOURCE_LIST
   "platforms/windows/nativeapp.h"
   "platforms/windows/userinput.h"
   "platforms/windows/userinput.cpp"
-  "platforms/windows/window.cpp"
-  "platforms/windows/window.h"
+  "platforms/windows/window_impl.cpp"
+  "platforms/windows/window_impl.h"
 )
 
 add_library(yuki

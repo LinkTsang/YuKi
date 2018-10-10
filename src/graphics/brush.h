@@ -3,15 +3,11 @@
 #include "graphics/color.h"
 
 namespace yuki {
-enum class BrushStyle {
-  SolidColor,
-  LinearGradient,
-  RadialGradient,
-  Bitmap
-};
+namespace graphic {
+enum class BrushStyle { SolidColor, LinearGradient, RadialGradient, Bitmap };
 
 class Brush : public Object {
-public:
+ public:
   Brush(const Brush&) = default;
   Brush(Brush&&) = default;
   Brush& operator=(const Brush&) = default;
@@ -27,22 +23,25 @@ public:
 };
 
 class SolidColorBrush : public Brush {
-public:
-  explicit SolidColorBrush(const ColorF color) :
-    Brush(BrushStyle::SolidColor),
-    color_(color) {}
-  ~SolidColorBrush() {};
-  SolidColorBrush* clone() const override{ return new SolidColorBrush(color_); }
+ public:
+  explicit SolidColorBrush(const ColorF color)
+      : Brush(BrushStyle::SolidColor), color_(color) {}
+  ~SolidColorBrush(){};
+  SolidColorBrush* clone() const override {
+    return new SolidColorBrush(color_);
+  }
 
   ColorF getColor() const { return color_; }
   void setColor(const ColorF& color) { color_ = color; }
-private:
+
+ private:
   ColorF color_;
 };
 
-class LinearGradientBrush : public Brush { };
+class LinearGradientBrush : public Brush {};
 
-class RadialGradientBrush : public Brush { };
+class RadialGradientBrush : public Brush {};
 
-class BitmapBrush : public Brush { };
-} // namespace yuki
+class BitmapBrush : public Brush {};
+}  // namespace graphic
+}  // namespace yuki

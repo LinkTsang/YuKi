@@ -2,14 +2,16 @@
 #include <Windows.h>
 #include "core/logger.h"
 #include "platforms/windows/direct2d.h"
-#include "platforms/windows/window.h"
+#include "platforms/windows/window_impl.h"
 
 namespace yuki {
+namespace platforms {
+namespace windows {
 /*******************************************************************************
  * class Win32LoggerListener
  ******************************************************************************/
 class Win32LoggerListener : public ILoggerListener {
-public:
+ public:
   Win32LoggerListener() = default;
   Win32LoggerListener(const Win32LoggerListener&) = default;
   Win32LoggerListener(Win32LoggerListener&&) = default;
@@ -57,4 +59,6 @@ int NativeApp::run() {
 }
 
 void NativeApp::terminate() { DirectXRes::releaseAll(); }
+}  // namespace windows
+}  // namespace platforms
 }  // namespace yuki

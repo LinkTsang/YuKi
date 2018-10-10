@@ -3,15 +3,15 @@
 #include <memory>
 #include "core/object.h"
 #include "core/string.hpp"
-#include "ui/view.h"
 #include "ui/userinput.h"
+#include "ui/view.h"
 
 namespace yuki {
+namespace ui {
 class View;
-class Window;
 
 class INativeWindow : public Object {
-public:
+ public:
   INativeWindow() = default;
   INativeWindow(const INativeWindow&) = default;
   INativeWindow(INativeWindow&&) = default;
@@ -33,7 +33,7 @@ public:
 };
 
 class Window : public Object {
-public:
+ public:
   Window();
   explicit Window(std::shared_ptr<View> view);
   Window(const Window&) = delete;
@@ -65,7 +65,10 @@ public:
   virtual void windowStateChangeEvent(WindowStateChangedEventArgs* args);
   virtual void movingEvent(WindowMovingEventArgs* args);
   virtual void movedEvent(WindowMovedEventArgs* args);
-protected:
+
+ protected:
   std::unique_ptr<INativeWindow> w_;
 };
-} // namespace yuki
+
+}  // namespace ui
+}  // namespace yuki

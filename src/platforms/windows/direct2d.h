@@ -10,13 +10,16 @@
 #include "graphics/painter.h"
 
 namespace yuki {
+namespace platforms {
+namespace windows {
+using namespace yuki::graphic;
 class D2DContext2D;
 
 /**
  * \brief DirectX Resource Manager class
  */
 class DirectXRes {
-public:
+ public:
   DirectXRes() = delete;
 
   static void init();
@@ -34,7 +37,7 @@ public:
 
   static std::unique_ptr<D2DContext2D> createContextFromHWnd(HWND hWnd);
 
-private:
+ private:
   static Microsoft::WRL::ComPtr<ID3D11Device> d3device_;
   static Microsoft::WRL::ComPtr<IDXGIDevice> dxdevice_;
   static Microsoft::WRL::ComPtr<IDXGIAdapter> adapter_;
@@ -49,25 +52,23 @@ private:
   static void createDeviceResources();
 
   static HRESULT createD3D11Device(
-    D3D_DRIVER_TYPE type, Microsoft::WRL::ComPtr<ID3D11Device>& device);
+      D3D_DRIVER_TYPE type, Microsoft::WRL::ComPtr<ID3D11Device>& device);
 };
-
 
 /**
  * \brief Direct2D Brush Allocation class
  */
 class D2DBrushAllocation {
-public:
+ public:
   Microsoft::WRL::ComPtr<ID2D1Brush> getD2DBrush(ID2D1DeviceContext* d2dContext,
                                                  const Brush* brush);
 };
-
 
 /**
  * \brief Direct2D Context class
  */
 class D2DContext2D : public Context2D {
-public:
+ public:
   explicit D2DContext2D(HWND hWnd);
 
   void resetSize(SizeF size) override;
@@ -116,7 +117,7 @@ public:
 
   std::unique_ptr<Bitmap> loadBitmap(const String& filename) override;
 
-private:
+ private:
   Microsoft::WRL::ComPtr<ID2D1DeviceContext> context_;
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swapChain_;
   Microsoft::WRL::ComPtr<ID2D1Bitmap1> bitmap_;
@@ -131,6 +132,6 @@ private:
 
   friend class NativeWindowManager;
 };
-
-
-} // namespace yuki
+}  // namespace windows
+}  // namespace platforms
+}  // namespace yuki

@@ -1,11 +1,20 @@
 #pragma once
-#include "uielement.h"
-#include "ui/userinput.h"
 #include <vector>
+#include "ui/userinput.h"
+#include "uielement.h"
 
 namespace yuki {
+namespace platforms {
+#ifdef _WIN32
+namespace windows {
+class NativeWindowManager;
+}
+#endif
+}  // namespace platforms
+
+namespace ui {
 class View : public UIElement {
-public:
+ public:
   View() = default;
   View(const View&) = default;
   View(View&&) = default;
@@ -15,7 +24,8 @@ public:
 
   const UIContainer& children() const;
   UIContainer& children();
-protected:
+
+ protected:
   void onRenderTargetChanged(Context2D* context) override;
   void onRender(Context2D* context) override;
   virtual void sizeChangedEvent(SizeChangedEventArgs* args);
@@ -28,9 +38,13 @@ protected:
   virtual void keyDownEvent(KeyEventArgs* args);
   virtual void keyCharEvent(KeyCharEventArgs* args);
   virtual void keyUpEvent(KeyEventArgs* args);
-  friend class NativeWindowManager;
 
-private:
+#ifdef _WIN32
+  friend class platforms::windows::NativeWindowManager;
+#endif
+
+ private:
   UIContainer children_;
 };
-} // namespace yuki
+}  // namespace ui
+}  // namespace yuki

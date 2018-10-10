@@ -5,10 +5,10 @@
 
 namespace yuki {
 /*******************************************************************************
-* class Logger
-******************************************************************************/
+ * class Logger
+ ******************************************************************************/
 class LoggerPrivate {
-public:
+ public:
   static std::mutex mutex;
   static std::vector<std::shared_ptr<ILoggerListener>> listeners;
 };
@@ -43,34 +43,22 @@ void Logger::addListener(std::shared_ptr<ILoggerListener> listener) {
 }
 
 void Logger::removeListener(const std::shared_ptr<ILoggerListener>& listener) {
-  LoggerPrivate::listeners.erase(std::remove(LoggerPrivate::listeners.begin(),
-                                             LoggerPrivate::listeners.end(),
-                                             listener),
-                                 LoggerPrivate::listeners.end());
+  LoggerPrivate::listeners.erase(
+      std::remove(LoggerPrivate::listeners.begin(),
+                  LoggerPrivate::listeners.end(), listener),
+      LoggerPrivate::listeners.end());
 }
 
-Logger Logger::debug() {
-  return Logger{TEXT("|DEBUG|")};
-}
+Logger Logger::debug() { return Logger{TEXT("|DEBUG|")}; }
 
-Logger Logger::error() {
-  return Logger{TEXT("|Error|")};
-}
+Logger Logger::error() { return Logger{TEXT("|Error|")}; }
 
-Logger Logger::fatal() {
-  return Logger{TEXT("|Fatal|")};
-}
+Logger Logger::fatal() { return Logger{TEXT("|Fatal|")}; }
 
-Logger Logger::trace() {
-  return Logger{TEXT("|Trace|")};
-}
+Logger Logger::trace() { return Logger{TEXT("|Trace|")}; }
 
-Logger Logger::info() {
-  return Logger{TEXT("|Info|")};
-}
+Logger Logger::info() { return Logger{TEXT("|Info|")}; }
 
-Logger Logger::warning() {
-  return Logger{TEXT("|Warning|")};
-}
+Logger Logger::warning() { return Logger{TEXT("|Warning|")}; }
 
-} // namespace yuki
+}  // namespace yuki

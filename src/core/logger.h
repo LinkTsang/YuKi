@@ -1,10 +1,10 @@
 #pragma once
-#include "core/string.hpp"
 #include <memory>
+#include "core/string.hpp"
 
 namespace yuki {
 class ILoggerListener {
-public:
+ public:
   ILoggerListener() = default;
   ILoggerListener(const ILoggerListener&) = default;
   ILoggerListener(ILoggerListener&&) = default;
@@ -16,7 +16,7 @@ public:
 };
 
 class Logger {
-public:
+ public:
   explicit Logger(const String& tag);
   Logger(const Logger&) = delete;
   Logger& operator=(const Logger&) = delete;
@@ -33,7 +33,8 @@ public:
   static Logger info();
   static Logger trace();
   static Logger warning();
-protected:
+
+ protected:
   Logger(Logger&&) = default;
 };
 
@@ -101,4 +102,4 @@ template <typename T>
 Logger& operator<<(Logger&& logger, T&& value) {
   return logger << std::forward<T>(value);
 }
-} // namespace yuki
+}  // namespace yuki

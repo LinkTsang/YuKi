@@ -3,6 +3,7 @@
 #include "core/string.hpp"
 
 namespace yuki {
+namespace graphic {
 /// <summary>
 /// Alignment of paragraph text along the reading direction axis relative to
 /// the leading and trailing edge of the layout box.
@@ -208,12 +209,11 @@ class Font {
 
   void setSize(float size) { size_ = size; }
 
-  float size() const {
-    return size_;
-  }
+  float size() const { return size_; }
 
  private:
   String familyName_;
   float size_;
 };
+}  // namespace graphic
 }  // namespace yuki
