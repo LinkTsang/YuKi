@@ -590,27 +590,28 @@ void D2DContext2D::drawBitmap(const Bitmap* bitmap,
                               const RectF* sourceRectangle) {
   if (destionationRectangle == nullptr) {
     context_->DrawBitmap(ToD2DBitmap(bitmap).Get());
-  }
-  D2D1_BITMAP_INTERPOLATION_MODE interpolationMode;
-  switch (mode) {
-    case BitmapInterpolationMode::Linear:
-      interpolationMode = D2D1_BITMAP_INTERPOLATION_MODE_LINEAR;
-      break;
-    case BitmapInterpolationMode::NearestNeighbor:
-      interpolationMode = D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR;
-      break;
-    default:
-      interpolationMode = D2D1_BITMAP_INTERPOLATION_MODE_LINEAR;
-      break;
-  }
-  if (sourceRectangle == nullptr) {
-    context_->DrawBitmap(ToD2DBitmap(bitmap).Get(),
-                         ToD2DRectF(*destionationRectangle), opacity,
-                         interpolationMode);
   } else {
-    context_->DrawBitmap(ToD2DBitmap(bitmap).Get(),
-                         ToD2DRectF(*destionationRectangle), opacity,
-                         interpolationMode, ToD2DRectF(sourceRectangle));
+    D2D1_BITMAP_INTERPOLATION_MODE interpolationMode;
+    switch (mode) {
+      case BitmapInterpolationMode::Linear:
+        interpolationMode = D2D1_BITMAP_INTERPOLATION_MODE_LINEAR;
+        break;
+      case BitmapInterpolationMode::NearestNeighbor:
+        interpolationMode = D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR;
+        break;
+      default:
+        interpolationMode = D2D1_BITMAP_INTERPOLATION_MODE_LINEAR;
+        break;
+    }
+    if (sourceRectangle == nullptr) {
+      context_->DrawBitmap(ToD2DBitmap(bitmap).Get(),
+                           ToD2DRectF(*destionationRectangle), opacity,
+                           interpolationMode);
+    } else {
+      context_->DrawBitmap(ToD2DBitmap(bitmap).Get(),
+                           ToD2DRectF(*destionationRectangle), opacity,
+                           interpolationMode, ToD2DRectF(sourceRectangle));
+    }
   }
 }
 
