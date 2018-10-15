@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdint>
+#include <functional>
 
 namespace yuki {
 namespace graphic {
@@ -191,5 +192,25 @@ class ColorF {
   static const uint32_t SC_GREEN_MASK = 0xff << SC_GREEN_SHIFT;
   static const uint32_t SC_BLUE_MASK = 0xff << SC_BLUE_SHIFT;
 };
+
+inline bool operator==(const ColorF& lhs, const ColorF& rhs) {
+  return lhs.red() == rhs.red() && lhs.green() == rhs.green() &&
+         lhs.blue() == rhs.blue() && lhs.alpha() == rhs.alpha();
+}
 }  // namespace graphic
 }  // namespace yuki
+
+namespace std {
+template <>
+struct hash<yuki::graphic::ColorF> {
+  typedef yuki::graphic::ColorF argument_type;
+  typedef std::size_t result_type;
+  result_type operator()(const argument_type& x) const {
+    result_type const h0 = std::hash<float>{}(x.red());
+    result_type const h1 = std::hash<float>{}(x.green());
+    result_type const h2 = std::hash<float>{}(x.blue());
+    result_type const h3 = std::hash<float>{}(x.alpha());
+    return h0 ^ h1 ^ h2 ^ h3;
+  }
+};
+}  // namespace std

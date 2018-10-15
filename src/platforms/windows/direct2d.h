@@ -7,6 +7,7 @@
 #include <windows.h>
 #include <wrl.h>
 #include <memory>
+#include <unordered_map>
 #include "graphics/painter.h"
 
 namespace yuki {
@@ -62,6 +63,9 @@ class D2DBrushAllocation {
  public:
   Microsoft::WRL::ComPtr<ID2D1Brush> getD2DBrush(ID2D1DeviceContext* d2dContext,
                                                  const Brush* brush);
+  void reset();
+ private:
+  std::unordered_map<ColorF, Microsoft::WRL::ComPtr<ID2D1Brush>> soildColorBrushcache_;
 };
 
 /**

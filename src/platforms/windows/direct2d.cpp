@@ -448,14 +448,25 @@ ComPtr<ID2D1Brush> D2DBrushAllocation::getD2DBrush(
   switch (brush->style()) {
     case BrushStyle::SolidColor: {
       const auto solidColorBrush = static_cast<const SolidColorBrush*>(brush);
-      ComPtr<ID2D1SolidColorBrush> d2dBrush;
-      ThrowIfFailed(d2dContext->CreateSolidColorBrush(
-          ToD2DColorF(solidColorBrush->getColor()), &d2dBrush));
-      return d2dBrush;
+      ColorF color = solidColorBrush->getColor();
+      if (auto itr = soildColorBrushcache_.find(color);
+          itr != soildColorBrushcache_.end()) {
+        return itr->second;
+      } else {
+        ComPtr<ID2D1SolidColorBrush> d2dBrush;
+        ThrowIfFailed(d2dContext->CreateSolidColorBrush(
+            ToD2DColorF(solidColorBrush->getColor()), &d2dBrush));
+        soildColorBrushcache_.insert({color, d2dBrush});
+        return d2dBrush;
+      }
     }
     default:
       return nullptr;
   }
+}
+
+void D2DBrushAllocation::reset() {
+  soildColorBrushcache_.clear();
 }
 
 /*******************************************************************************
@@ -463,6 +474,7 @@ ComPtr<ID2D1Brush> D2DBrushAllocation::getD2DBrush(
  ******************************************************************************/
 
 void D2DContext2D::resetSize(SizeF size) {
+  brushAllocation_->reset();
   using namespace Microsoft::WRL;
   const int DOUBLE_BUFFER_COUNT = 2;
   context_->SetTarget(nullptr);
@@ -482,7 +494,8 @@ void D2DContext2D::resetSize(SizeF size) {
   createDeviceSwapChainBitmap();
 }
 
-D2DContext2D::D2DContext2D(HWND hWnd) {
+D2DContext2D::D2DContext2D(HWND hWnd) 
+  : brushAllocation_(new D2DBrushAllocation) {
   createDeviceContextFromHWnd(hWnd);
   createDeviceSwapChainBitmap();
 }
