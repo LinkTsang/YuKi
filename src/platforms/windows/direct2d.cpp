@@ -5,7 +5,6 @@
 #include <exception>
 #include <string_view>
 #include <utility>
-
 #undef max
 #undef min
 
@@ -440,6 +439,8 @@ inline HRESULT DirectXRes::createD3D11Device(D3D_DRIVER_TYPE const type,
  * class D2DBrushAllocation
  ******************************************************************************/
 
+D2DBrushAllocation::D2DBrushAllocation() : soildColorBrushcache_(64) {}
+
 ComPtr<ID2D1Brush> D2DBrushAllocation::getD2DBrush(
     ID2D1DeviceContext* d2dContext, const Brush* brush) {
   if (brush == nullptr) {
@@ -449,14 +450,13 @@ ComPtr<ID2D1Brush> D2DBrushAllocation::getD2DBrush(
     case BrushStyle::SolidColor: {
       const auto solidColorBrush = static_cast<const SolidColorBrush*>(brush);
       ColorF color = solidColorBrush->getColor();
-      if (auto itr = soildColorBrushcache_.find(color);
-          itr != soildColorBrushcache_.end()) {
-        return itr->second;
+      if (auto result = soildColorBrushcache_.get(color)) {
+        return result.get();
       } else {
         ComPtr<ID2D1SolidColorBrush> d2dBrush;
         ThrowIfFailed(d2dContext->CreateSolidColorBrush(
             ToD2DColorF(solidColorBrush->getColor()), &d2dBrush));
-        soildColorBrushcache_.insert({color, d2dBrush});
+        soildColorBrushcache_.insert(color, d2dBrush);
         return d2dBrush;
       }
     }
@@ -465,9 +465,7 @@ ComPtr<ID2D1Brush> D2DBrushAllocation::getD2DBrush(
   }
 }
 
-void D2DBrushAllocation::reset() {
-  soildColorBrushcache_.clear();
-}
+void D2DBrushAllocation::reset() { soildColorBrushcache_.clear(); }
 
 /*******************************************************************************
  * class D2DContext
@@ -494,8 +492,8 @@ void D2DContext2D::resetSize(SizeF size) {
   createDeviceSwapChainBitmap();
 }
 
-D2DContext2D::D2DContext2D(HWND hWnd) 
-  : brushAllocation_(new D2DBrushAllocation) {
+D2DContext2D::D2DContext2D(HWND hWnd)
+    : brushAllocation_(new D2DBrushAllocation) {
   createDeviceContextFromHWnd(hWnd);
   createDeviceSwapChainBitmap();
 }

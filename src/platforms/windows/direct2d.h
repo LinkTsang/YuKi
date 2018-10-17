@@ -6,6 +6,7 @@
 #include <dwrite_1.h>
 #include <windows.h>
 #include <wrl.h>
+#include <boost/compute/detail/lru_cache.hpp>
 #include <memory>
 #include <unordered_map>
 #include "graphics/painter.h"
@@ -61,11 +62,14 @@ class DirectXRes {
  */
 class D2DBrushAllocation {
  public:
+  D2DBrushAllocation();
   Microsoft::WRL::ComPtr<ID2D1Brush> getD2DBrush(ID2D1DeviceContext* d2dContext,
                                                  const Brush* brush);
   void reset();
+
  private:
-  std::unordered_map<ColorF, Microsoft::WRL::ComPtr<ID2D1Brush>> soildColorBrushcache_;
+  boost::compute::detail::lru_cache<ColorF, Microsoft::WRL::ComPtr<ID2D1Brush>>
+      soildColorBrushcache_;
 };
 
 /**

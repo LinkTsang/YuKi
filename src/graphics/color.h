@@ -179,6 +179,13 @@ class ColorF {
   constexpr void setGreen(float green) { green_ = green; }
   constexpr void setBlue(float blue) { blue_ = blue; }
 
+  constexpr uint32_t toAARRGGBB() const {
+    return (static_cast<uint32_t>(alpha() * 255) << 24) ||
+           (static_cast<uint32_t>(red() * 255) << 16) ||
+           (static_cast<uint32_t>(green() * 255) << 8) ||
+           (static_cast<uint32_t>(blue() * 255));
+  }
+
  private:
   float alpha_;
   float red_;
@@ -211,6 +218,14 @@ struct hash<yuki::graphic::ColorF> {
     result_type const h2 = std::hash<float>{}(x.blue());
     result_type const h3 = std::hash<float>{}(x.alpha());
     return h0 ^ h1 ^ h2 ^ h3;
+  }
+};
+
+template <>
+struct less<yuki::graphic::ColorF> {
+  bool operator()(const yuki::graphic::ColorF& lhs,
+                  const yuki::graphic::ColorF& rhs) const {
+    return lhs.toAARRGGBB() < rhs.toAARRGGBB();
   }
 };
 }  // namespace std
