@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 namespace yuki {
 namespace graphic {
@@ -149,7 +149,8 @@ class TRect {
 
   template <typename U>
   TRect(const TRect<U>& other)
-      : left_(other.left_) £¬top_(other.top_),
+      : left_(other.left_), 
+        top_(other.top_),
         right_(other.right_),
         bottom_(other.bottom_) {}
 
