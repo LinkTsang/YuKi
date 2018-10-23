@@ -6,6 +6,7 @@
 #include <dwrite_1.h>
 #include <windows.h>
 #include <wrl.h>
+#include <boost/type_traits.hpp>
 #include <boost/compute/detail/lru_cache.hpp>
 #include <memory>
 #include <unordered_map>
