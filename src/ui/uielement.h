@@ -64,9 +64,13 @@ class UIContainer : public Object {
   UIContainer& add(std::initializer_list<UIElement*> elements);
   UIContainer& remove(const UIElement* element);
 
-  class const_iterator
-      : public std::iterator<std::input_iterator_tag, UIElement*> {
+  class const_iterator {
    public:
+    using iterator_category = std::input_iterator_tag;
+    using value_type = UIElement*;
+    using difference_type = std::ptrdiff_t;
+    using pointer = UIElement**;
+    using reference = UIElement*&;
     explicit const_iterator(const Iterator& iterator) : iterator_(iterator) {}
 
     const_iterator& operator++() {

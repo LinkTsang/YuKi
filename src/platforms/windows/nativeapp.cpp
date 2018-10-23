@@ -40,7 +40,7 @@ HINSTANCE NativeApp::getInstance() { return ::GetModuleHandle(nullptr); }
 inline int NativeApp::messageLoop() {
   MSG msg;
   BOOL result;
-  while (result = ::GetMessage(&msg, nullptr, 0, 0)) {
+  while ((result = ::GetMessage(&msg, nullptr, 0, 0))) {
     if (!::TranslateAccelerator(msg.hwnd, nullptr, &msg)) {
       TranslateMessage(&msg);
       ::DispatchMessage(&msg);

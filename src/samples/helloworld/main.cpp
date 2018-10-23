@@ -20,7 +20,7 @@ class GridLength {
 
   GridUnit unit() const { return unit_; }
   void setUnit(GridUnit unit) { unit_ = unit; }
-  float setValue(float value) { value_ = value; }
+  void setValue(float value) { value_ = value; }
   float value() const { return value_; }
 
   bool isAbsolute() const { return unit_ == GridUnit::Absolute; }
@@ -224,7 +224,7 @@ class Label : public UIElement {
   void setMinSize(SizeF size) { minSize_ = size; }
   SizeF minSize() const { return size_; }
 
-  SizeF sizeHint() const {}
+  SizeF sizeHint() const { return {}; }
 
   void setText(const String& text) { text_ = text; }
   const String& text() const { return text_; }

@@ -1,12 +1,14 @@
 #pragma once
 
 #include <memory>
-#include "ui/window.h"
 
 #ifdef TEXT
 #undef TEXT
 #endif
 #include <Windows.h>
+
+#include "ui/window.h"
+#include "platforms/windows/direct2d.h"
 
 namespace yuki {
 namespace platforms {

@@ -302,17 +302,20 @@ static constexpr D2D1_RECT_F ToD2DRectF(const RectF* rect) noexcept {
 
 static constexpr D2D1_ROUNDED_RECT ToD2DRoundedRectF(
     const RoundedRectF& rect) noexcept {
-  return D2D1_ROUNDED_RECT{rect.left(),   rect.top(),     rect.right(),
-                           rect.bottom(), rect.radiusX(), rect.radiusY()};
+  return D2D1_ROUNDED_RECT{
+      {rect.left(), rect.top(), rect.right(), rect.bottom()},
+      rect.radiusX(),
+      rect.radiusY()};
 }
 
 static constexpr D2D1_ELLIPSE ToD2DEllipse(const EllipseF& ellipse) {
-  return D2D1_ELLIPSE{ellipse.x(), ellipse.y(), ellipse.radiusX(),
-                      ellipse.radiusY()};
+  return D2D1_ELLIPSE{
+      {ellipse.x(), ellipse.y()}, ellipse.radiusX(), ellipse.radiusY()};
 }
 
 static constexpr D2D1_ELLIPSE ToD2DEllipse(const CircleF& circle) {
-  return D2D1_ELLIPSE{circle.x(), circle.y(), circle.radius(), circle.radius()};
+  return D2D1_ELLIPSE{
+      {circle.x(), circle.y()}, circle.radius(), circle.radius()};
 }
 
 static constexpr D2D1_COLOR_F ToD2DColorF(const ColorF& color) noexcept {
