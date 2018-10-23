@@ -39,8 +39,8 @@ void NativeWindowManager::init() {
 
 LRESULT NativeWindowManager::WndProc(HWND hWnd, UINT message, WPARAM wParam,
                                      LPARAM lParam) {
-  auto* nativeWindow =
-      reinterpret_cast<NativeWindowImpl*>(GetWindowLong(hWnd, GWL_USERDATA));
+  auto* nativeWindow = reinterpret_cast<NativeWindowImpl*>(
+      ::GetWindowLongPtr(hWnd, GWLP_USERDATA));
   if (nativeWindow == nullptr) {
     return DefWindowProc(hWnd, message, wParam, lParam);
   }
@@ -202,7 +202,7 @@ NativeWindowImpl::NativeWindowImpl(Window* window, std::shared_ptr<View> view)
       window_(window),
       view_(std::move(view)),
       context_(DirectXRes::createContextFromHWnd(hWnd_)) {
-  SetWindowLong(hWnd_, GWL_USERDATA, reinterpret_cast<LONG>(this));
+  ::SetWindowLongPtr(hWnd_, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
 }
 
 WindowState NativeWindowImpl::getWindowState() {
