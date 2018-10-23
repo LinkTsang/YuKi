@@ -12,3 +12,22 @@
 ### LLVM
 - Version: 7.0.0+
 - Please set LLVM_DIR to the root directory containing LLVM.
+
+## Build
+### Windows
+#### Visual Studio 15 2017
+```cmd
+mkdir build
+cd build
+cmake -G "Visual Studio 15 2017" ..
+cmake --build .
+```
+#### Visual Studio 15 2017 with Clang
+- First, install [LLVM Compiler toolset](https://marketplace.visualstudio.com/items?itemName=LLVMExtensions.llvm-toolchain) for Visual Studio 15 2017.
+- Then, build with the LLVM toolset.
+```cmd
+mkdir build
+cd build
+cmake -G "Visual Studio 15 2017" -T "llvm" ..
+cmake --build .
+```
