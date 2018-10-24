@@ -1,3 +1,4 @@
+add_definitions(-DUNICODE)
 include_directories(${PROJECT_SOURCE_DIR}/src)
 
 set(YUKI_SOURCE_LIST
@@ -53,5 +54,5 @@ foreach(source IN LISTS YUKI_SOURCE_LIST)
     source_group("${source_path_msvc}" FILES "${source}")
 endforeach()
 
-add_subdirectory(samples)
+add_subdirectory(examples)
 add_subdirectory(experiment)
