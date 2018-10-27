@@ -34,6 +34,9 @@
 *.out
 *.app
 
+# Editors and IDEs
+.vs/*
+.vscode/*
+
 # Others
-.vscode
 *.TMP
