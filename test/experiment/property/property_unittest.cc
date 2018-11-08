@@ -1,16 +1,10 @@
+#include <gtest/gtest.h>
 #include <cstdio>
 #include <iostream>
 #include "property.h"
 
-#include <cassert>
-#define EXPECT_EQ(EXCEPT, ACTUAL)                                              \
-  if ((EXCEPT) != (ACTUAL)) {                                                  \
-    std::cerr << "EXPECT_EQ(" << (EXCEPT) << ", " << (ACTUAL) << ") FAILED!\n" \
-              << __FILE__ << ":" << __LINE__ << "\n";                          \
-    exit(-1);                                                                  \
-  }
-
-void runPropertyTest() {
+namespace {
+TEST(Property, Assign) {
   Property<int> a = 1;
   Property<int> b = 2;
   Property<int> c;
@@ -30,7 +24,7 @@ void runPropertyTest() {
   printf("c=%d\n", c.get());
 }
 
-void runPropertyCycleTest() {
+TEST(Property, Cycle) {
   Property<int> a;
   Property<int> b;
 
@@ -49,7 +43,7 @@ void runPropertyCycleTest() {
   printf("b=%d\n", b.get());
 }
 
-void runPropertyUnbindTest() {
+TEST(Property, Unbind) {
   Property<int> a;
   Property<int> b;
 
@@ -61,7 +55,7 @@ void runPropertyUnbindTest() {
   printf("a=%d\n", a.get());
 }
 
-void runPropertyRebindTest() {
+TEST(Property, Rebind) {
   Property<int> a = 1;
   Property<int> b = 2;
   Property<int> c = 3;
@@ -81,9 +75,4 @@ void runPropertyRebindTest() {
   printf("a=%d\n", a.get());
 }
 
-int main() {
-  runPropertyTest();
-  runPropertyCycleTest();
-  runPropertyUnbindTest();
-  runPropertyRebindTest();
-}
+}  // namespace
