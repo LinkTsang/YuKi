@@ -3,10 +3,11 @@
 #include "property.h"
 
 #include <cassert>
-#define EXPECT_EQ(EXCEPT, ACTUAL)                                             \
-  if ((EXCEPT) != (ACTUAL)) {                                                 \
-    std::cerr << "EXPECT_EQ(" << (EXCEPT) << ", " << (ACTUAL) << ") FAILED!"; \
-    exit(-1);                                                                 \
+#define EXPECT_EQ(EXCEPT, ACTUAL)                                              \
+  if ((EXCEPT) != (ACTUAL)) {                                                  \
+    std::cerr << "EXPECT_EQ(" << (EXCEPT) << ", " << (ACTUAL) << ") FAILED!\n" \
+              << __FILE__ << ":" << __LINE__ << "\n";                          \
+    exit(-1);                                                                  \
   }
 
 void runPropertyTest() {
@@ -48,7 +49,41 @@ void runPropertyCycleTest() {
   printf("b=%d\n", b.get());
 }
 
+void runPropertyUnbindTest() {
+  Property<int> a;
+  Property<int> b;
+
+  a.bind([&] { return b; }, b);
+  b = 3;
+  a.unbind();
+  b = 4;
+  EXPECT_EQ(3, a.get());
+  printf("a=%d\n", a.get());
+}
+
+void runPropertyRebindTest() {
+  Property<int> a = 1;
+  Property<int> b = 2;
+  Property<int> c = 3;
+
+  a.bind([&] { return b; }, b);
+  b = 4;
+  EXPECT_EQ(4, a.get());
+  printf("a=%d\n", a.get());
+
+  a.bind([&] { return c; }, c);
+  b = 5;
+  EXPECT_EQ(3, a.get());
+  printf("a=%d\n", a.get());
+
+  c = 9;
+  EXPECT_EQ(9, a.get());
+  printf("a=%d\n", a.get());
+}
+
 int main() {
   runPropertyTest();
   runPropertyCycleTest();
+  runPropertyUnbindTest();
+  runPropertyRebindTest();
 }

@@ -3,6 +3,9 @@
 #include <functional>
 #include <vector>
 
+template <typename T>
+class Property;
+
 class PropertyBase {
  public:
   // evaluate
@@ -19,9 +22,7 @@ class PropertyBase {
     }
   }
   // notify
-  void notify() {
-    notify(this);
-  }
+  void notify() { notify(this); }
 
  protected:
   // notify
@@ -32,6 +33,8 @@ class PropertyBase {
   }
   std::vector<PropertyBase*> observers_;
   std::vector<PropertyBase*> dependencies_;
+  template <typename T>
+  friend class Property;
 };
 
 template <typename T>
@@ -74,6 +77,12 @@ class Property : public PropertyBase {
   void bind(Property<U>& value) {
     dependencies_.push_back(&value);
     value.observers_.push_back(this);
+  }
+  void unbind() {
+    for (auto dependency : dependencies_) {
+      auto& observers = dependency->observers_;
+      observers.erase(std::remove(observers.begin(), observers.end(), this));
+    }
   }
 
   // evaluate
