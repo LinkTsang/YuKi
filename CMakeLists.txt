@@ -17,9 +17,19 @@ include_directories(${ANTLR4CPP_INCLUDE_DIRS})
 link_directories(${ANTLR4CPP_LIBS})
 message(STATUS "Found antlr4cpp libs: ${ANTLR4CPP_LIBS} and includes: ${ANTLR4CPP_INCLUDE_DIRS} ")
 
-project (YuKi)
+### Google Test ###
+set(GOOGLETEST_VERSION 1.9.0)
+# Prevent overriding the parent project's compiler/linker
+# settings on Windows
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+enable_testing()
+include(CMakeDependentOption)
+include(GNUInstallDirs)
+add_subdirectory(thirdparty/googletest)
+
+project(YuKi)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
-add_subdirectory (src)
-add_subdirectory (test)
+add_subdirectory(src)
+add_subdirectory(test)
