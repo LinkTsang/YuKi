@@ -29,4 +29,26 @@ void runPropertyTest() {
   printf("c=%d\n", c.get());
 }
 
-int main() { runPropertyTest(); }
+void runPropertyCycleTest() {
+  Property<int> a;
+  Property<int> b;
+
+  a.bind([&] { return b; }, b);
+  b.bind([&] { return a; }, a);
+
+  a = 3;
+  EXPECT_EQ(3, a.get());
+  EXPECT_EQ(3, b.get());
+  printf("a=%d\n", a.get());
+  printf("b=%d\n", b.get());
+  b = 8;
+  EXPECT_EQ(8, a.get());
+  EXPECT_EQ(8, b.get());
+  printf("a=%d\n", a.get());
+  printf("b=%d\n", b.get());
+}
+
+int main() {
+  runPropertyTest();
+  runPropertyCycleTest();
+}

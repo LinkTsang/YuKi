@@ -20,12 +20,16 @@ class PropertyBase {
   }
   // notify
   void notify() {
-    for (auto observer : observers_) {
-      observer->evaluate(this);
-    }
+    notify(this);
   }
 
  protected:
+  // notify
+  void notify(PropertyBase* source) {
+    for (auto observer : observers_) {
+      observer->evaluate(source);
+    }
+  }
   std::vector<PropertyBase*> observers_;
   std::vector<PropertyBase*> dependencies_;
 };
@@ -76,7 +80,9 @@ class Property : public PropertyBase {
   virtual void evaluate(PropertyBase* source) override {
     if (binding_) {
       value_ = binding_();
-      notify();
+      if (source != this) {
+        notify(source);
+      }
     }
   }
 
