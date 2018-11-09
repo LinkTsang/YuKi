@@ -7,8 +7,8 @@
 #endif
 #include <Windows.h>
 
-#include "ui/window.h"
 #include "platforms/windows/direct2d.h"
+#include "ui/window.h"
 
 namespace yuki {
 namespace platforms {
