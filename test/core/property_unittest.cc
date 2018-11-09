@@ -1,9 +1,11 @@
+#include <core/property.h>
 #include <gtest/gtest.h>
 #include <cstdio>
 #include <iostream>
-#include "property.h"
 
 namespace {
+
+using namespace yuki;
 
 TEST(Property, BindingProperty) {
   Property<int> a = 1;

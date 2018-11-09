@@ -3,6 +3,8 @@
 #include <functional>
 #include <vector>
 
+namespace yuki {
+
 template <typename T>
 class Property;
 
@@ -34,7 +36,7 @@ class PropertyBase {
     property->observers_.push_back(this);
   }
 
-protected:
+ protected:
   std::vector<PropertyBase*> observers_;
   std::vector<PropertyBase*> dependencies_;
   template <typename T>
@@ -103,3 +105,5 @@ class Property : public PropertyBase {
   T value_;
   Binding binding_;
 };
+
+}  // namespace yuki
