@@ -54,6 +54,31 @@ TEST(Property, Cycle) {
   EXPECT_EQ(8, b.get());
 }
 
+TEST(Property, TripleCycle) {
+  Property<int> a;
+  Property<int> b;
+  Property<int> c;
+
+  a.bind([&] { return b; }, b);
+  b.bind([&] { return c; }, c);
+  c.bind([&] { return a; }, a);
+
+  a = 5;
+  EXPECT_EQ(5, a.get());
+  EXPECT_EQ(5, b.get());
+  EXPECT_EQ(5, c.get());
+
+  b = 2;
+  EXPECT_EQ(2, a.get());
+  EXPECT_EQ(2, b.get());
+  EXPECT_EQ(2, c.get());
+
+  b = 0;
+  EXPECT_EQ(0, a.get());
+  EXPECT_EQ(0, b.get());
+  EXPECT_EQ(0, c.get());
+}
+
 TEST(Property, Unbind) {
   Property<int> a;
   Property<int> b;
