@@ -133,7 +133,7 @@ ExternalProject_ADD(
   PREFIX             ${ANTLR4CPP_EXTERNAL_ROOT}
   #--Download step--------------
   GIT_REPOSITORY     ${ANTLR4CPP_EXTERNAL_REPO}
-  GIT_TAG            ${ANTLR4CPP_EXTERNAL_TAG}
+  # GIT_TAG            ${ANTLR4CPP_EXTERNAL_TAG}
   TIMEOUT            10
   LOG_DOWNLOAD       ON
   #--Update step----------
