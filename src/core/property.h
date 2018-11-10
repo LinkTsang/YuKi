@@ -1,7 +1,7 @@
 #pragma once
 #include <algorithm>
+#include <forward_list>
 #include <functional>
-#include <vector>
 
 namespace yuki {
 
@@ -14,16 +14,18 @@ class PropertyBase {
   virtual ~PropertyBase() {
     for (const auto& observer : observers_) {
       auto& dependencies = observer->dependencies_;
-      if (!dependencies.empty()) {
-        dependencies.erase(
-            std::remove(dependencies.begin(), dependencies.end(), this),
-            dependencies.end());
-      }
+      dependencies.remove(this);
     }
   }
 
   void notify() { notify(this); }
   virtual void evaluate(PropertyBase* source) = 0;
+  void unbind() {
+    for (auto dependency : dependencies_) {
+      auto& observers = dependency->observers_;
+      observers.remove(this);
+    }
+  }
 
  protected:
   void notify(PropertyBase* source) {
@@ -32,13 +34,13 @@ class PropertyBase {
     }
   }
   void bind(PropertyBase* property) {
-    dependencies_.push_back(property);
-    property->observers_.push_back(this);
+    dependencies_.emplace_front(property);
+    property->observers_.emplace_front(this);
   }
 
  protected:
-  std::vector<PropertyBase*> observers_;
-  std::vector<PropertyBase*> dependencies_;
+  std::forward_list<PropertyBase*> observers_;
+  std::forward_list<PropertyBase*> dependencies_;
   template <typename T>
   friend class Property;
 };
@@ -83,12 +85,6 @@ class Property : public PropertyBase {
     { [[maybe_unused]] int unused[] = {0, ((void)PropertyBase::bind(&args), 0)...}; }
     binding_ = binding;
     evaluate(this);
-  }
-  void unbind() {
-    for (auto dependency : dependencies_) {
-      auto& observers = dependency->observers_;
-      observers.erase(std::remove(observers.begin(), observers.end(), this));
-    }
   }
 
   // evaluate
