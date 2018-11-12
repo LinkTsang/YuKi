@@ -1,6 +1,7 @@
 # YuKi
 [WIP] Yet Another Little GUI Library.
-[https://ci.appveyor.com/api/projects/status/github/LinkDoyle/Yuki](https://ci.appveyor.com/api/projects/status/github/LinkDoyle/Yuki)
+
+[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/h9p08cr7wwlys2lh?svg=true)](https://ci.appveyor.com/project/LinkDoyle/yuki)
 
 ## Requirements
 
