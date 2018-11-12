@@ -11,12 +11,6 @@ find_package(LLVM REQUIRED CONFIG)
 message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
 message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
 
-set(ANTLR4CPP_JAR_LOCATION ${CMAKE_SOURCE_DIR}/thirdparty/antlr/antlr-4.7.1-complete.jar)
-include(ExternalAntlr4Cpp)
-include_directories(${ANTLR4CPP_INCLUDE_DIRS})
-link_directories(${ANTLR4CPP_LIBS})
-message(STATUS "Found antlr4cpp libs: ${ANTLR4CPP_LIBS} and includes: ${ANTLR4CPP_INCLUDE_DIRS} ")
-
 ### Google Test ###
 set(GOOGLETEST_VERSION 1.9.0)
 # Prevent overriding the parent project's compiler/linker

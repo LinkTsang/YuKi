@@ -1,23 +1,39 @@
+### Antlr4 ###
+set(CMAKE_CXX_STANDARD 11)
+add_definitions(-DANTLR4CPP_STATIC)
+set(ANTLR4_WITH_STATIC_CRT OFF)#
+include(ExternalAntlr4Cpp)
+include_directories(${ANTLR4_INCLUDE_DIRS})
+set(ANTLR_EXECUTABLE ${CMAKE_SOURCE_DIR}/thirdparty/antlr/antlr-4.7.1-complete.jar)
+find_package(ANTLR REQUIRED)
+
+antlr_target(XMLGrammarLexer grammar/XMLLexer.g4
+             LEXER PACKAGE antlrxmlparser)
+antlr_target(XMLGrammarParser grammar/XMLParser.g4
+             PARSER LISTENER VISITOR
+             PACKAGE antlrxmlparser
+             DEPENDS_ANTLR XMLGrammarLexer)
+
+message (status "${ANTLR_XMLGrammarLexer_OUTPUT_DIR}")
+message (status "${ANTLR_XMLGrammarParser_OUTPUT_DIR}")
+message (status "${ANTLR_XMLGrammarParser_CXX_OUTPUTS}")
+message (status "${ANTLR_XMLGrammarParser_CXX_OUTPUTS}")
+
+include_directories(${ANTLR_XMLGrammarLexer_OUTPUT_DIR})
+include_directories(${ANTLR_XMLGrammarParser_OUTPUT_DIR})
+source_group("antlr4cpp" FILES
+  ${ANTLR_XMLGrammarLexer_CXX_OUTPUTS}
+  ${ANTLR_XMLGrammarParser_CXX_OUTPUTS}
+)
+ 
+set(CMAKE_CXX_STANDARD 17)
 include_directories(${PROJECT_SOURCE_DIR}/src/experiment)
 set(SOURCE_LIST
   "rpml_loader_test.cc"
 )
 
-antlr4cpp_process_grammar(yuki-rpml-test antlrxmlparser
-  ${CMAKE_CURRENT_SOURCE_DIR}/grammar/XMLLexer.g4
-  ${CMAKE_CURRENT_SOURCE_DIR}/grammar/XMLParser.g4)
-source_group("antlr4cpp" FILES ${antlr4cpp_src_files_antlrxmlparser})
-foreach(generated_file ${antlr4cpp_src_files_antlrxmlparser})
-  if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-    set_source_files_properties(
-      ${generated_file}
-      PROPERTIES
-      COMPILE_FLAGS -wd4251)
-  endif ()
-endforeach(generated_file)
-include_directories(${antlr4cpp_include_dirs_antlrxmlparser})
-
-add_executable(yuki-rpml-test ${SOURCE_LIST} ${antlr4cpp_src_files_antlrxmlparser})
-add_dependencies(yuki-rpml-test antlr4cpp antlr4cpp_generation_antlrxmlparser)
-add_compile_definitions(ANTLR4CPP_STATIC)
-target_link_libraries(yuki-rpml-test antlr4-runtime-static)
+add_executable(yuki_rpml_test ${SOURCE_LIST}
+  ${ANTLR_XMLGrammarLexer_CXX_OUTPUTS}
+  ${ANTLR_XMLGrammarParser_CXX_OUTPUTS}
+)
+target_link_libraries(yuki_rpml_test antlr4_static)
