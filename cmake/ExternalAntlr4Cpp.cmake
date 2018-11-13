@@ -96,6 +96,7 @@ else()
       PREFIX antlr4_runtime
       GIT_REPOSITORY ${ANTLR4_GIT_REPOSITORY}
       GIT_TAG ${ANTLR4_TAG}
+      UPDATE_DISCONNECTED 1
       DOWNLOAD_DIR ${CMAKE_CURRENT_BINARY_DIR}
       BUILD_COMMAND ""
       BUILD_IN_SOURCE 1
@@ -137,6 +138,13 @@ ExternalProject_Add_Step(
     EXCLUDE_FROM_MAIN 1
     WORKING_DIRECTORY ${ANTLR4_ROOT})
 ExternalProject_Add_StepTargets(antlr4_runtime build_shared)
+
+ExternalProject_Add_Step(
+    antlr4_runtime
+    update_repo
+    COMMAND ${GIT_EXECUTABLE} pull
+    WORKING_DIRECTORY ${ANTLR4_ROOT})
+ExternalProject_Add_StepTargets(antlr4_runtime update_repo)
 
 add_library(antlr4_shared SHARED IMPORTED)
 add_dependencies(antlr4_shared antlr4_runtime-build_shared)
