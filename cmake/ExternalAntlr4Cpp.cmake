@@ -143,8 +143,10 @@ ExternalProject_Add_Step(
     antlr4_runtime
     update_repo
     COMMAND ${GIT_EXECUTABLE} pull
+    DEPENDEES antlr4_runtime
+    EXCLUDE_FROM_MAIN 1
     WORKING_DIRECTORY ${ANTLR4_ROOT})
-ExternalProject_Add_StepTargets(antlr4_runtime update_repo)
+ExternalProject_Add_StepTargets(antlr4_runtime NO_DEPENDS update_repo)
 
 add_library(antlr4_shared SHARED IMPORTED)
 add_dependencies(antlr4_shared antlr4_runtime-build_shared)
