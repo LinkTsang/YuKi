@@ -1,0 +1,3 @@
+[submodule "thirdparty/rttr"]
+	path = thirdparty/rttr
+	url = https://github.com/rttrorg/rttr
