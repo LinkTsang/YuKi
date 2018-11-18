@@ -1,0 +1,16 @@
+import std;
+
+function sayHello() {
+  var name : string = "Rapid Presentation Script";
+  println(`Hello, {name}!`);
+}
+
+sayHello();
+
+function @render() {
+<View>
+  <Rectangle Brush={Color.Blue}>
+    <TextBlock Content="Hello~"/>
+  </Rectangle>
+</View>
+}
