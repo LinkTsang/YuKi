@@ -1,5 +1,6 @@
 cmake_minimum_required (VERSION 3.10)
 
+include(ExternalProject)
 LIST(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
@@ -20,6 +21,27 @@ enable_testing()
 include(CMakeDependentOption)
 include(GNUInstallDirs)
 add_subdirectory(thirdparty/googletest)
+
+### RTTR ###
+set(RTTR_BUILD_COMMAND ${CMAKE_COMMAND} --build . --config $(CONFIGURATION) --target)
+set(RTTR_INSTALL_COMMAND ${CMAKE_COMMAND} --build . --target install)
+ExternalProject_Add(rttr
+  PREFIX ${CMAKE_SOURCE_DIR}/thirdparty/rttr
+  SOURCE_DIR ${CMAKE_SOURCE_DIR}/thirdparty/rttr
+  BINARY_DIR ${CMAKE_BINARY_DIR}/thirdparty/rttr
+  BUILD_COMMAND ${RTTR_BUILD_COMMAND} RTTR::Core_Lib
+  CMAKE_CACHE_ARGS
+    -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
+    -DBUILD_RTTR_DYNAMIC=ON
+    -DBUILD_STATIC=ON
+    -DBUILD_INSTALLER=OFF
+
+  INSTALL_DIR ${CMAKE_BINARY_DIR}/thirdparty/install/rttr
+  INSTALL_COMMAND ${RTTR_INSTALL_COMMAND}
+)
+
+set(RTTR_DIR ${CMAKE_BINARY_DIR}/thirdparty/install/rttr)
+# find_package(RTTR CONFIG REQUIRED Core)
 
 project(YuKi)
 set(CMAKE_CXX_STANDARD 17)
