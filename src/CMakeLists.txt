@@ -44,9 +44,8 @@ set(YUKI_SOURCE_LIST
   "platforms/windows/window_impl.h"
 )
 
-add_library(yuki
-  ${YUKI_SOURCE_LIST}
-)
+add_library(yuki ${YUKI_SOURCE_LIST})
+set_target_properties(yuki PROPERTIES FOLDER "Yuki")
 
 foreach(source IN LISTS YUKI_SOURCE_LIST)
     get_filename_component(source_path "${source}" PATH)

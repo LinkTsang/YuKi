@@ -5,4 +5,5 @@ set(RPML_SOURCE_LIST
   "rpml_loader.cc"
 )
 
-add_library(yuki-rpml ${RPML_SOURCE_LIST})
+add_library(yuki_rpml ${RPML_SOURCE_LIST})
+set_target_properties(yuki_rpml PROPERTIES FOLDER "Yuki")

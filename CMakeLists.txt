@@ -4,13 +4,17 @@ include(ExternalProject)
 LIST(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+### Boost ###
 find_package(Boost 1.68 REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 
+### LLVM ###
 find_package(LLVM REQUIRED CONFIG)
 message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
 message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
+set_target_properties(intrinsics_gen PROPERTIES FOLDER "ThirdParty")
 
 ### Google Test ###
 set(GOOGLETEST_VERSION 1.9.0)
@@ -21,6 +25,8 @@ enable_testing()
 include(CMakeDependentOption)
 include(GNUInstallDirs)
 add_subdirectory(thirdparty/googletest)
+set_target_properties(gtest PROPERTIES FOLDER "ThirdParty")
+set_target_properties(gtest_main PROPERTIES FOLDER "ThirdParty")
 
 ### RTTR ###
 set(RTTR_BUILD_COMMAND ${CMAKE_COMMAND} --build . --config $(CONFIGURATION) --target)
