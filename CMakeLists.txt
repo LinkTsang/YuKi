@@ -49,6 +49,19 @@ ExternalProject_Add(rttr
 set(RTTR_DIR ${CMAKE_BINARY_DIR}/thirdparty/install/rttr)
 # find_package(RTTR CONFIG REQUIRED Core)
 
+### Antlr4 ###
+set(CMAKE_CXX_STANDARD 11)
+add_definitions(-DANTLR4CPP_STATIC)
+set(ANTLR4_WITH_STATIC_CRT OFF)
+include(ExternalAntlr4Cpp)
+set(ANTLR_EXECUTABLE ${CMAKE_SOURCE_DIR}/thirdparty/antlr/antlr-4.7.1-complete.jar)
+find_package(ANTLR REQUIRED)
+
+set_target_properties(antlr4_runtime PROPERTIES FOLDER "ThirdParty")
+set_target_properties(antlr4_runtime-build_shared PROPERTIES FOLDER "ThirdParty")
+set_target_properties(antlr4_runtime-build_static PROPERTIES FOLDER "ThirdParty")
+set_target_properties(antlr4_runtime-update_repo PROPERTIES FOLDER "ThirdParty")
+
 project(YuKi)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
