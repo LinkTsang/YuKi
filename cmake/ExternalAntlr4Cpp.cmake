@@ -19,7 +19,7 @@ else()
   set(ANTLR4_OUTPUT_DIR ${ANTLR4_ROOT}/runtime/Cpp/dist)
 endif()
 
-if(MSVC)
+if(${CMAKE_GENERATOR} MATCHES "Visual Studio.*")
   set(ANTLR4_STATIC_LIBRARIES
       ${ANTLR4_OUTPUT_DIR}/antlr4-runtime-static.lib)
   set(ANTLR4_SHARED_LIBRARIES
