@@ -35,7 +35,7 @@ ExternalProject_Add(rttr
   PREFIX ${CMAKE_SOURCE_DIR}/thirdparty/rttr
   SOURCE_DIR ${CMAKE_SOURCE_DIR}/thirdparty/rttr
   BINARY_DIR ${CMAKE_BINARY_DIR}/thirdparty/rttr
-  BUILD_COMMAND ${RTTR_BUILD_COMMAND} RTTR::Core_Lib
+  BUILD_COMMAND ${RTTR_BUILD_COMMAND} rttr_core_lib
   CMAKE_CACHE_ARGS
     -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
     -DBUILD_RTTR_DYNAMIC:BOOL=ON
@@ -45,7 +45,7 @@ ExternalProject_Add(rttr
   INSTALL_DIR ${CMAKE_BINARY_DIR}/thirdparty/install/rttr
   INSTALL_COMMAND ${RTTR_INSTALL_COMMAND}
 )
-
+set_target_properties(rttr PROPERTIES FOLDER "ThirdParty")
 set(RTTR_DIR ${CMAKE_BINARY_DIR}/thirdparty/install/rttr)
 # find_package(RTTR CONFIG REQUIRED Core)
 
